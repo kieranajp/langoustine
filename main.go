@@ -30,7 +30,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "db-dsn",
 						Usage:   "Database DSN",
-						Value:   "postgres://127.0.0.1:5432/recipes",
+						Value:   "postgres://127.0.0.1:5432/recipes?sslmode=disable",
 						EnvVars: []string{"DB_DSN"},
 					},
 				},

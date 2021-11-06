@@ -1,31 +1,37 @@
 package repository
 
 import (
-	"context"
-
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jmoiron/sqlx"
+	"github.com/kieranajp/langoustine/pkg/domain"
 )
 
 type RecipeRepository interface {
-	FindAll() (string, error)
+	FindAll() ([]*domain.Recipe, error)
 }
 
 type Recipe struct {
-	db *pgxpool.Pool
+	db *sqlx.DB
 }
 
-func NewRecipeRepository(db *pgxpool.Pool) RecipeRepository {
+func NewRecipeRepository(db *sqlx.DB) RecipeRepository {
 	return &Recipe{db: db}
 }
 
-func (r *Recipe) FindAll() (string, error) {
-	// var recipes []*domain.Recipe
+func (r *Recipe) FindAll() ([]*domain.Recipe, error) {
+	var recipes []*domain.Recipe
 
-	var name string
-	err := r.db.QueryRow(context.Background(), "SELECT name FROM recipes LIMIT 1").Scan(&name)
+	rows, err := r.db.Queryx("SELECT uuid, name FROM recipes")
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	for rows.Next() {
+		var recipe domain.Recipe
+		err = rows.StructScan(&recipe)
+		if err != nil {
+			return nil, err
+		}
+		recipes = append(recipes, &recipe)
 	}
 
-	return name, nil
+	return recipes, nil
 }
