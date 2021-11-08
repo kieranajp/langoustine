@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
@@ -12,11 +13,25 @@ type BaseHandler struct {
 	recipeRepository repository.RecipeRepository
 }
 
+func (h *BaseHandler) respondWithJSON(w http.ResponseWriter, payload interface{}) {
+	wrapped := map[string]interface{}{
+		"data": payload,
+	}
+	j, err := json.Marshal(wrapped)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
+}
+
 func (h *BaseHandler) failOnError(w http.ResponseWriter, err error, msg string) {
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error": "` + msg + `"}`))
 		log.Error().Err(err).Msg(msg)
-		http.Error(w, msg, http.StatusInternalServerError)
-		return
 	}
 }
 
