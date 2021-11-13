@@ -10,7 +10,9 @@ import (
 )
 
 type BaseHandler struct {
-	recipeRepository repository.RecipeRepository
+	recipeRepository     repository.RecipeRepository
+	ingredientRepository repository.IngredientRepository
+	stepRepository       repository.StepRepository
 }
 
 func (h *BaseHandler) respondWithJSON(w http.ResponseWriter, payload interface{}) {
@@ -37,6 +39,8 @@ func (h *BaseHandler) failOnError(w http.ResponseWriter, err error, msg string) 
 
 func NewBaseHandler(db *sqlx.DB) *BaseHandler {
 	return &BaseHandler{
-		recipeRepository: repository.NewRecipeRepository(db),
+		recipeRepository:     repository.NewRecipeRepository(db),
+		ingredientRepository: repository.NewIngredientRepository(db),
+		stepRepository:       repository.NewStepRepository(db),
 	}
 }

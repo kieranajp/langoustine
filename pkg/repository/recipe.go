@@ -45,12 +45,8 @@ func (r *Recipe) FindByUUID(uuid string) (*domain.Recipe, error) {
 			r.uuid,
 			r.name,
 			r.description,
-			r.timing,
-			s.uuid,
-			s.index,
-			s.instruction
+			r.timing
 		FROM recipes r
-		INNER JOIN steps s ON r.uuid = s.recipe_id
 		WHERE r.uuid = $1
 	`, uuid)
 	if err != nil {

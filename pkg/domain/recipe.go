@@ -18,11 +18,12 @@ type Step struct {
 type Ingredient struct {
 	ID   string        `json:"id" db:"uuid"`
 	Name string        `json:"name"`
-	Unit UnitOfMeasure `json:"unit"`
+	Unit UnitOfMeasure `json:"unit" db:"unit"`
 }
 
 type UnitOfMeasure struct {
-	Quantity int    `json:"quantity"`
-	Unit     string `json:"unit"`
-	Abbr     string `json:"abbr"`
+	ID       string `json:"id" db:"uuid"`
+	Quantity int    `json:"quantity" db:"quantity"`
+	Unit     string `json:"unit" db:"name"`
+	Abbr     string `json:"abbr" db:"abbreviation"`
 }

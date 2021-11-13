@@ -14,5 +14,19 @@ func (h *BaseHandler) GetRecipeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ingredients, err := h.ingredientRepository.FindByRecipe(recipe)
+	if err != nil {
+		h.failOnError(w, err, "failed to find ingredients")
+		return
+	}
+	recipe.Ingredients = ingredients
+
+	steps, err := h.stepRepository.FindByRecipe(recipe)
+	if err != nil {
+		h.failOnError(w, err, "failed to find steps")
+		return
+	}
+	recipe.Steps = steps
+
 	h.respondWithJSON(w, recipe)
 }

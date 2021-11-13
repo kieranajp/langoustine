@@ -1,3 +1,3 @@
 GET http://127.0.0.1:8080/recipes HTTP/1.1
 ###
-GET http://127.0.0.1:8080/recipes/66fbb8b4-cd6f-498c-b297-226ce1ecaa4a HTTP/1.1
+GET http://127.0.0.1:8080/recipes/a611f5aa-58b5-4d1a-b39b-1a6f407097ed HTTP/1.1
