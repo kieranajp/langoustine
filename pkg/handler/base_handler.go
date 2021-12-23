@@ -2,9 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/kieranajp/langoustine/pkg/domain"
 	"github.com/kieranajp/langoustine/pkg/repository"
 	"github.com/rs/zerolog/log"
 )
@@ -35,6 +37,26 @@ func (h *BaseHandler) failOnError(w http.ResponseWriter, err error, msg string) 
 		w.Write([]byte(`{"error": "` + msg + `"}`))
 		log.Error().Err(err).Msg(msg)
 	}
+}
+
+func (h *BaseHandler) GetFullRecipe(recipeUUID string) (*domain.Recipe, error) {
+	recipe, err := h.recipeRepository.FindByUUID(recipeUUID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find recipe: %s", err)
+	}
+
+	ingredients, err := h.ingredientRepository.FindByRecipe(recipe)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find ingredients: %s", err)
+	}
+	recipe.Ingredients = ingredients
+
+	steps, err := h.stepRepository.FindByRecipe(recipe)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find recipe steps: %s", err)
+	}
+	recipe.Steps = steps
+	return recipe, nil
 }
 
 func NewBaseHandler(db *sqlx.DB) *BaseHandler {

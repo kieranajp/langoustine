@@ -8,25 +8,7 @@ import (
 
 func (h *BaseHandler) GetRecipeHandler(w http.ResponseWriter, r *http.Request) {
 	recipeID := chi.URLParam(r, "recipeID")
-	recipe, err := h.recipeRepository.FindByUUID(recipeID)
-	if err != nil {
-		h.failOnError(w, err, "failed to find recipe")
-		return
-	}
-
-	ingredients, err := h.ingredientRepository.FindByRecipe(recipe)
-	if err != nil {
-		h.failOnError(w, err, "failed to find ingredients")
-		return
-	}
-	recipe.Ingredients = ingredients
-
-	steps, err := h.stepRepository.FindByRecipe(recipe)
-	if err != nil {
-		h.failOnError(w, err, "failed to find steps")
-		return
-	}
-	recipe.Steps = steps
-
+	recipe, err := h.GetFullRecipe(recipeID)
+	h.failOnError(w, err, "failed to get recipe")
 	h.respondWithJSON(w, recipe)
 }

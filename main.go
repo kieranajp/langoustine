@@ -16,6 +16,14 @@ type Config struct {
 
 func main() {
 	app := &cli.App{
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "db-dsn",
+				Usage:   "Database DSN",
+				Value:   "postgres://127.0.0.1:5432/recipes?sslmode=disable",
+				EnvVars: []string{"DB_DSN"},
+			},
+		},
 		Commands: []*cli.Command{
 			{
 				Name:  "serve",
@@ -27,14 +35,14 @@ func main() {
 						Value:   "127.0.0.1:8080",
 						EnvVars: []string{"LISTEN_ADDRESS"},
 					},
-					&cli.StringFlag{
-						Name:    "db-dsn",
-						Usage:   "Database DSN",
-						Value:   "postgres://127.0.0.1:5432/recipes?sslmode=disable",
-						EnvVars: []string{"DB_DSN"},
-					},
 				},
 				Action: cmd.Serve,
+			},
+			{
+				Name:      "export",
+				Usage:     "Export recipe as epub",
+				Action:    cmd.Export,
+				ArgsUsage: `Recipe UUID`,
 			},
 		},
 	}

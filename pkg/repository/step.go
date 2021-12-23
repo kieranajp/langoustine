@@ -20,7 +20,13 @@ func NewStepRepository(db *sqlx.DB) StepRepository {
 func (r *Step) FindByRecipe(recipe *domain.Recipe) ([]*domain.Step, error) {
 	var steps []*domain.Step
 
-	rows, err := r.db.Queryx("SELECT uuid, index, instruction FROM steps WHERE recipe_id = $1", recipe.ID)
+	rows, err := r.db.Queryx(`
+		SELECT uuid, index, instruction
+		FROM steps
+		WHERE recipe_id = $1
+		ORDER BY index ASC`,
+		recipe.ID,
+	)
 	if err != nil {
 		return nil, err
 	}

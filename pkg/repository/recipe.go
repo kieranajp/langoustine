@@ -21,7 +21,7 @@ func NewRecipeRepository(db *sqlx.DB) RecipeRepository {
 func (r *Recipe) FindAll() ([]*domain.Recipe, error) {
 	var recipes []*domain.Recipe
 
-	rows, err := r.db.Queryx("SELECT uuid, name, description, timing FROM recipes")
+	rows, err := r.db.Queryx("SELECT uuid, name, description, timing, serving_size FROM recipes")
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,8 @@ func (r *Recipe) FindByUUID(uuid string) (*domain.Recipe, error) {
 			r.uuid,
 			r.name,
 			r.description,
-			r.timing
+			r.timing,
+			r.serving_size
 		FROM recipes r
 		WHERE r.uuid = $1
 	`, uuid)
