@@ -43,6 +43,20 @@ func main() {
 				Usage:     "Export recipe as epub",
 				Action:    cmd.Export,
 				ArgsUsage: `Recipe UUID`,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "format",
+						Aliases: []string{"f"},
+						Usage:   "Output format",
+						Value:   "kindle",
+					},
+					&cli.StringFlag{
+						Name:    "output",
+						Aliases: []string{"o"},
+						Usage:   "Output file",
+						Value:   "out",
+					},
+				},
 			},
 		},
 	}

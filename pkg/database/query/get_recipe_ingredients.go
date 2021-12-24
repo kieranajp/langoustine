@@ -1,26 +1,17 @@
-package repository
+package query
 
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/kieranajp/langoustine/pkg/domain"
 )
 
-type IngredientRepository interface {
-	FindByRecipe(*domain.Recipe) ([]*domain.Ingredient, error)
+type GetRecipeIngredients struct {
+	query string
+	db    *sqlx.DB
 }
 
-type Ingredient struct {
-	db *sqlx.DB
-}
-
-func NewIngredientRepository(db *sqlx.DB) IngredientRepository {
-	return &Ingredient{db: db}
-}
-
-func (r *Ingredient) FindByRecipe(recipe *domain.Recipe) ([]*domain.Ingredient, error) {
-	var ingredients []*domain.Ingredient
-
-	rows, err := r.db.Queryx(`
+func (q *GetRecipeIngredients) New(db *sqlx.DB) *GetRecipeIngredients {
+	const query = `
 		SELECT
 			i.uuid,
 			i.name,
@@ -34,7 +25,17 @@ func (r *Ingredient) FindByRecipe(recipe *domain.Recipe) ([]*domain.Ingredient, 
 		INNER JOIN units u
 			ON ri.unit_id = u.uuid
 		WHERE ri.recipe_id = $1
-		`, recipe.ID)
+	`
+	return &GetRecipeIngredients{
+		db:    db,
+		query: query,
+	}
+}
+
+func (q *GetRecipeIngredients) Execute(recipe *domain.Recipe) ([]*domain.Ingredient, error) {
+	var ingredients []*domain.Ingredient
+
+	rows, err := q.db.Queryx(q.query, recipe.ID)
 	if err != nil {
 		return nil, err
 	}

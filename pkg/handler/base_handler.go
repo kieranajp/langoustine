@@ -2,19 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/kieranajp/langoustine/pkg/domain"
-	"github.com/kieranajp/langoustine/pkg/repository"
 	"github.com/rs/zerolog/log"
 )
 
 type BaseHandler struct {
-	recipeRepository     repository.RecipeRepository
-	ingredientRepository repository.IngredientRepository
-	stepRepository       repository.StepRepository
+	db *sqlx.DB
 }
 
 func (h *BaseHandler) respondWithJSON(w http.ResponseWriter, payload interface{}) {
@@ -39,30 +34,6 @@ func (h *BaseHandler) failOnError(w http.ResponseWriter, err error, msg string) 
 	}
 }
 
-func (h *BaseHandler) GetFullRecipe(recipeUUID string) (*domain.Recipe, error) {
-	recipe, err := h.recipeRepository.FindByUUID(recipeUUID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find recipe: %s", err)
-	}
-
-	ingredients, err := h.ingredientRepository.FindByRecipe(recipe)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find ingredients: %s", err)
-	}
-	recipe.Ingredients = ingredients
-
-	steps, err := h.stepRepository.FindByRecipe(recipe)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find recipe steps: %s", err)
-	}
-	recipe.Steps = steps
-	return recipe, nil
-}
-
 func NewBaseHandler(db *sqlx.DB) *BaseHandler {
-	return &BaseHandler{
-		recipeRepository:     repository.NewRecipeRepository(db),
-		ingredientRepository: repository.NewIngredientRepository(db),
-		stepRepository:       repository.NewStepRepository(db),
-	}
+	return &BaseHandler{db: db}
 }
