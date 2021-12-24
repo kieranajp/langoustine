@@ -2,6 +2,7 @@ package exporter
 
 import (
 	"fmt"
+	"image"
 	"io"
 	"math/rand"
 	"time"
@@ -43,7 +44,7 @@ func (e *KindleExporter) Export(recipeUUID string) error {
 	db := book.Realize()
 	err = db.Write(e.writer)
 	if err != nil {
-		return errors.Wrap(err, "Failed to write mobi file")
+		return errors.Wrap(err, "Failed to write azw3 file")
 	}
 
 	return nil
@@ -55,6 +56,7 @@ func (e *KindleExporter) generateMobi(recipe *domain.Recipe, cover *CoverImage) 
 	chapters = append(chapters, e.generateIngredientsChapter(recipe.Ingredients))
 	chapters = append(chapters, e.generateStepsChapter(recipe.Steps))
 
+	recipeImage, _ := recipe.LoadImage()
 	return mobi.Book{
 		Title:       recipe.Name,
 		Authors:     []string{"Kieran Patel"},
@@ -63,6 +65,7 @@ func (e *KindleExporter) generateMobi(recipe *domain.Recipe, cover *CoverImage) 
 		Chapters:    chapters,
 		UniqueID:    rand.Uint32(),
 		CoverImage:  cover.Image,
+		Images:      []image.Image{recipeImage},
 	}
 }
 
@@ -70,6 +73,7 @@ func (e *KindleExporter) generateDescriptionChapter(recipe *domain.Recipe) mobi.
 	desc := fmt.Sprintf("<h1>%s</h1>", recipe.Name)
 	desc += fmt.Sprintf("<p>Serves %d, takes %s</p>", recipe.Servings, recipe.Timing)
 	desc += fmt.Sprintf("<p>%s</p>", recipe.Description)
+	desc += fmt.Sprintf(`<img src="%s" />`, "images/00002.jpeg")
 
 	return mobi.Chapter{
 		Title:  recipe.Name,

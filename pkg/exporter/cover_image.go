@@ -24,7 +24,7 @@ const coverHeight = 2560
 const backgroundImageUrl = "https://picsum.photos"
 
 //go:embed "res/PlayfairDisplay-Bold.ttf"
-var fontFace []byte
+var titleFontFace []byte
 
 func NewCoverImage() *CoverImage {
 	return &CoverImage{}
@@ -79,7 +79,7 @@ func (c *CoverImage) drawOverlay(dc *gg.Context) {
 }
 
 func (c *CoverImage) drawTitle(dc *gg.Context, recipeTitle string) error {
-	f, err := truetype.Parse(fontFace)
+	f, err := truetype.Parse(titleFontFace)
 	if err != nil {
 		return errors.Wrap(err, "Failed to load font")
 	}

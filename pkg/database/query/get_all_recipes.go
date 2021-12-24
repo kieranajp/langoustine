@@ -13,12 +13,14 @@ type GetAllRecipes struct {
 func (q *GetAllRecipes) New(db *sqlx.DB) *GetAllRecipes {
 	const query = `
 		SELECT
-			uuid,
-			name,
-			description,
-			timing,
-			serving_size
-		FROM recipes
+			r.uuid,
+			r.name,
+			r.description,
+			p.url AS photo_url,
+			r.timing,
+			r.serving_size
+		FROM recipes r
+		LEFT JOIN photos p ON r.uuid = p.recipe_id
 	`
 	return &GetAllRecipes{
 		db:    db,

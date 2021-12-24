@@ -15,11 +15,14 @@ func (q *GetRecipe) New(db *sqlx.DB) *GetRecipe {
 		SELECT
 			r.uuid,
 			r.name,
+			p.url AS photo_url,
 			r.description,
 			r.timing,
 			r.serving_size
 		FROM recipes r
+		LEFT JOIN photos p ON r.uuid = p.recipe_id
 		WHERE r.uuid = $1
+		LIMIT 1
 	`
 	return &GetRecipe{
 		db:    db,
