@@ -73,7 +73,7 @@ func (e *KindleExporter) generateDescriptionChapter(recipe *domain.Recipe) mobi.
 
 	return mobi.Chapter{
 		Title:  recipe.Name,
-		Chunks: mobi.Chunks(recipe.Description),
+		Chunks: mobi.Chunks(desc),
 	}
 }
 
