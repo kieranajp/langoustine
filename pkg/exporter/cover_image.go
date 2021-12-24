@@ -19,8 +19,8 @@ type CoverImage struct {
 	Image image.Image
 }
 
-const coverWidth = 625
-const coverHeight = 1000
+const coverWidth = 1600
+const coverHeight = 2560
 const backgroundImageUrl = "https://picsum.photos"
 
 //go:embed "res/PlayfairDisplay-Bold.ttf"
@@ -84,13 +84,13 @@ func (c *CoverImage) drawTitle(dc *gg.Context, recipeTitle string) error {
 		return errors.Wrap(err, "Failed to load font")
 	}
 	dc.SetFontFace(truetype.NewFace(f, &truetype.Options{
-		Size: 80,
+		Size: 160,
 	}))
 
 	textShadowColor := color.Black
 	textColor := color.White
-	x := 60.0
-	y := 90.0
+	x := 180.0
+	y := 220.0
 
 	maxWidth := float64(dc.Width()) - (2 * x)
 	dc.SetColor(textShadowColor)
