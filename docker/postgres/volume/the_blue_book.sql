@@ -1,0 +1,1703 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner:
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner:
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: equipment; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.equipment (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    name character varying(40) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.equipment OWNER TO recipes;
+
+--
+-- Name: ingredients; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.ingredients (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    name character varying(40) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.ingredients OWNER TO recipes;
+
+--
+-- Name: labels; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.labels (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    name character varying(40) NOT NULL,
+    colour character varying(40) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.labels OWNER TO recipes;
+
+--
+-- Name: photos; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.photos (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    title character varying(40) NOT NULL,
+    url character varying(1024) NOT NULL,
+    recipe_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.photos OWNER TO recipes;
+
+--
+-- Name: recipe_ingredient; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.recipe_ingredient (
+    recipe_id uuid NOT NULL,
+    ingredient_id uuid NOT NULL,
+    unit_id uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    quantity double precision DEFAULT '1'::double precision NOT NULL
+);
+
+
+ALTER TABLE public.recipe_ingredient OWNER TO recipes;
+
+--
+-- Name: recipe_label; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.recipe_label (
+    label_id uuid NOT NULL,
+    recipe_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.recipe_label OWNER TO recipes;
+
+--
+-- Name: recipes; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.recipes (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    name character varying(80) NOT NULL,
+    description character varying(1024) NOT NULL,
+    timing time without time zone NOT NULL,
+    serving_size smallint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.recipes OWNER TO recipes;
+
+--
+-- Name: steps; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.steps (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    index smallint NOT NULL,
+    instruction character varying(1024) NOT NULL,
+    recipe_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.steps OWNER TO recipes;
+
+--
+-- Name: units; Type: TABLE; Schema: public; Owner: recipes
+--
+
+CREATE TABLE public.units (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    name character varying(40) NOT NULL,
+    abbreviation character varying(10) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.units OWNER TO recipes;
+
+--
+-- Data for Name: equipment; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.equipment (uuid, name, created_at, updated_at) FROM stdin;
+a889072f-a897-4426-8de3-d93a7f76f5bd	Baking bowl	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+d9cc63b5-e8d8-484c-8e1c-35301b3c134c	Mixing bowl	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+12ddcdd9-5739-4928-8a9b-26a39b1f5295	Baking paper	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+03cc0eed-8f7a-4a1c-b5a5-2d43244e7a52	Baking tray	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+2bd333d9-7f9a-420d-9d2f-9b649d391e73	Balloon whisk	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+66b6b3b1-9698-4a02-af90-0cef93147ba4	Blender	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+5f77bde4-7143-4977-95b2-b4007625fd46	Cake tin	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+af0d5d34-8562-49d7-a104-e1f435c4d0a6	Chopping board	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+6b44ac58-229c-43bb-87e2-588227d7ee21	Clingfilm	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+41017676-2b61-4b11-95b3-678ddd9d930a	Colander	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+9db62860-61f4-47b3-88e2-6abff53ed06c	Cooling tray	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+9aba0319-7429-4c2d-b88b-1d334d1d5aef	Corer	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+ca1883d6-7180-49fb-ae8d-cfb9c7aab3bf	Glass	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+e4ae73f1-85dd-4bf8-b68d-ccccbb4fcaa5	Fork	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+35bdf481-750a-4596-8197-6d5d44802e47	Food processor	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+53dd5ae5-3084-44fa-bf5a-1ea682357ffc	Grater	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+3678b940-5be9-4bb6-8da5-8b216155f855	Bread knife	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+dd0164e4-31e7-42fa-bdd7-c9bff5c3b58e	Butter knife	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+e1a4da62-164c-40d3-a289-3a438cac0e99	Palette knife	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+e06f0d0e-6ab2-4d85-9022-0967daa2a8fc	Vegetable knife	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+0d601dce-2622-4624-98f0-4978fd1233d4	Measuring jug	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+2f8671c4-2f13-467a-9031-12e4173ca027	Pastry brush	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+6d33e69c-3034-455c-a5cf-0ff6bc25c3ca	Pastry cutter	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+4875e702-f03d-47ca-b10a-d282cf2220cd	Peeler	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+6b62fdf4-e7b5-4a6d-9a17-8a5ad31da643	Potato masher	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+2a75eb01-3f2d-4255-8186-1714bae07891	Tinfoil	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+94c89809-5102-4de1-ac23-78b6d6822124	Toaster	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+1dbef7b0-c2a7-4d96-bdb7-d11f75472f59	Sandwich maker	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+f9588f99-d707-42b1-9e01-490ca8d6bd0a	Frying pan	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+a83e57fc-f1dd-4a7d-b7c9-55a42603ceea	Saucepan	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+5c09ca0c-7f0f-43f4-aa2a-bdcef02f29af	Sieve	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+e3ee2c8e-f73a-4837-9426-85fca1c7c40c	Straw	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+cff4852e-572e-43ee-9fd1-730957cf263a	Dessert spoon	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+1daed5df-731a-4ef5-a247-7ec83dfaf07f	Tablespoon	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+3465f233-5c5a-480b-b763-7c02c5c49b01	Teaspoon	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+2849b619-f050-45fe-a0a4-bc7dee97f9f2	Wooden spoon	2020-04-06 11:13:53.500925+00	2020-04-06 11:13:53.500925+00
+\.
+
+
+--
+-- Data for Name: ingredients; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.ingredients (uuid, name, created_at, updated_at) FROM stdin;
+36af3356-aa3e-4665-8ebd-146d80c321ee	Carrot	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	White onion	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+67565f55-5acc-4ae4-8cb2-efff35a3075a	Spring onion	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+6726ff9c-3d0c-4ca4-93aa-4500892a0e21	Red onion	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+51d7eafd-e7dd-42b2-849a-36701cc9bce4	Soy sauce	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+2126cfb2-6868-4c7c-acc1-f534d8ad3572	Crushed chili flakes	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+1f56087c-cc2d-4d4c-987e-3958d3af38bb	Sesame seeds	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+62e983ae-7ab5-4be7-8393-4b7d7b5e3100	Sesame oil	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+b35bdf2f-4c7d-4f58-a788-fb711a0398e6	Baby spinach	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+cad81b48-cc93-4a30-8320-65b5a8dc68da	Egg	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+88eae677-0610-49a1-8b43-70815c25fa87	Bean sprouts	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+f61c7096-ad2e-41fb-b821-d57bc5766d5c	Cucumber	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+09333b91-b223-4bc2-b32c-f33f7bf75d15	Sambal Oelek	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+1de6d0ea-d9e9-40dd-88c6-5ee0d5941df6	Honey	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+e9a2e878-9b8c-494a-acb9-3f69792960b2	Sushi rice	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	Garlic cloves	2020-04-06 11:40:20.715921+00	2020-04-06 11:40:20.715921+00
+f3d99221-5cc0-42a9-8ade-4343a3f38719	Panko breadcrumbs	2020-04-17 13:31:33.962134+00	2020-04-17 13:31:33.962134+00
+b25a5be3-39e2-4c57-8cd6-a9d5677be90b	Butter	2020-04-17 13:31:33.962134+00	2020-04-17 13:31:33.962134+00
+d3d47e4b-6fbd-4015-8489-037e975fdf44	Italian seasoning	2020-04-17 13:31:33.962134+00	2020-04-17 13:31:33.962134+00
+e5e5f8fb-1791-48d3-9f21-33fe3aa23c02	Dried basil	2020-04-17 13:31:33.962134+00	2020-04-17 13:31:33.962134+00
+8dbfae0c-5181-43cb-97ae-eec4614ab3eb	Dried rosemary	2020-04-17 13:32:20.121377+00	2020-04-17 13:32:20.121377+00
+4a1408de-9e4b-4543-b263-c3b13d9e2b6a	Dried thyme	2020-04-17 13:32:20.121377+00	2020-04-17 13:32:20.121377+00
+d5c1d741-86be-405c-973e-424a2208f662	Salt	2020-04-17 13:32:20.121377+00	2020-04-17 13:32:20.121377+00
+45717d52-00bd-44c4-bd83-94e89cf13e82	Black pepper	2020-04-17 13:32:20.121377+00	2020-04-17 13:32:20.121377+00
+7d0f3d48-4725-4af5-940d-a7aca3e8c382	Butternut squash	2020-04-17 13:32:20.121377+00	2020-04-17 13:32:20.121377+00
+b015a13e-0120-4c52-b0c8-d604e34a88a6	Olive oil	2020-04-17 13:32:41.278162+00	2020-04-17 13:32:41.278162+00
+0b595038-508a-45db-98b8-0b9372095627	Mozzarella	2020-04-17 13:33:51.656781+00	2020-04-17 13:33:51.656781+00
+55ceff1c-d7ab-411b-96a8-e73a617a43be	Flour (plain)	2020-04-17 13:33:51.656781+00	2020-04-17 13:33:51.656781+00
+1c5ffd9b-4ef2-4cc7-96b4-8ed29827a2a1	Fresh sage	2020-04-17 13:33:51.656781+00	2020-04-17 13:33:51.656781+00
+faa117d8-38ed-472b-bbd1-00a0b919766f	Dried sage	2020-04-17 13:33:51.656781+00	2020-04-17 13:33:51.656781+00
+e3a6c0d8-f461-40ac-9179-15e91578eef2	Parmesan	2020-04-17 13:33:51.656781+00	2020-04-17 13:33:51.656781+00
+58098651-8f71-46c2-bacc-db7d173d9ff7	Vegetable stock	2020-04-17 13:33:51.656781+00	2020-04-17 13:33:51.656781+00
+b5c2021c-fba8-4ce0-aa95-7c09e626a0aa	Milk (low fat)	2020-04-17 13:33:51.656781+00	2020-04-17 13:33:51.656781+00
+5e5f5355-23df-469c-923a-d2264129038e	Apple	2020-04-22 11:06:06.208438+00	2020-04-22 11:06:06.208438+00
+7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	Lemon	2020-04-22 11:08:08.286751+00	2020-04-22 11:08:08.286751+00
+776102cd-4659-4282-b613-c23ce90a4f20	Mango juice	2020-04-22 11:08:08.286751+00	2020-04-22 11:08:08.286751+00
+873f9073-d5cf-4faf-88c6-1d4897e6b58d	Kale	2020-04-22 11:10:46.751532+00	2020-04-22 11:10:46.751532+00
+3e1e91a1-aa7a-4093-95a2-4645009a91cd	Mint	2020-04-22 11:11:52.504531+00	2020-04-22 11:11:52.504531+00
+179eda03-2e03-4d41-ad95-d9405d000683	Orange juice	2020-04-22 11:13:28.090108+00	2020-04-22 11:13:28.090108+00
+d00125be-5a0b-4695-a7ec-b6158e8f2611	Tomato	2020-04-22 11:13:28.090108+00	2020-04-22 11:13:28.090108+00
+2c010390-1652-4b0d-9277-630c1589548f	Chopped tomatoes	2020-04-22 11:13:28.090108+00	2020-04-22 11:13:28.090108+00
+1286849c-5718-4076-97cf-0feefc9f400a	Strawberries	2020-04-22 11:19:22.63794+00	2020-04-22 11:19:22.63794+00
+b873f041-72ea-48f4-b4fc-3131c9c4178b	Lime	2020-04-22 11:19:22.63794+00	2020-04-22 11:19:22.63794+00
+4a9496a7-8374-4c80-9c01-7d2bdbd92b75	Romaine lettuce	2020-04-22 11:20:49.735192+00	2020-04-22 11:20:49.735192+00
+7482bc6e-4df9-46fb-972d-013be1bccddc	Courgette	2020-04-22 11:20:49.735192+00	2020-04-22 11:20:49.735192+00
+58c3c8f2-4fb2-405c-8b03-af07af41f590	Caster sugar	2020-04-22 11:24:11.709864+00	2020-04-22 11:24:11.709864+00
+6df97308-8578-4785-9a28-ca602f45d00f	Cold water	2020-04-22 11:24:18.021129+00	2020-04-22 11:24:18.021129+00
+cde55457-37f5-4d68-81b9-7036fdce0ddc	Orange	2020-04-22 11:26:52.29263+00	2020-04-22 11:26:52.29263+00
+6a25ae65-45bd-4017-a17f-7ab245127651	Fresh turmeric	2020-04-22 11:27:46.92635+00	2020-04-22 11:27:46.92635+00
+0b8a3804-66c4-48ea-a333-059b3bc6d6f4	Turmeric (dried)	2020-04-22 11:27:46.92635+00	2020-04-22 11:27:46.92635+00
+c9ce8416-9def-4f09-8eb0-eb68cf547b37	Ice	2020-04-22 11:27:46.92635+00	2020-04-22 11:27:46.92635+00
+00c8c220-a129-41c5-b324-00851b56d57c	Ciabatta	2020-04-22 11:34:37.740475+00	2020-04-22 11:34:37.740475+00
+ff82d0d6-1c7a-4601-84c8-bce89cc812c0	Pesto	2020-04-22 11:34:46.543406+00	2020-04-22 11:34:46.543406+00
+a15506fa-6068-4796-8ce9-31b5bd013773	Broccoli	2020-04-22 11:52:33.274581+00	2020-04-22 11:52:33.274581+00
+2ece47a3-71e0-412d-88ef-80fe7924c429	Cheddar	2020-04-22 11:53:32.242735+00	2020-04-22 11:53:32.242735+00
+6af093e4-9b75-4270-84f6-53264b632137	Sour cream	2020-04-22 11:53:32.242735+00	2020-04-22 11:53:32.242735+00
+d44e2ada-2a86-4808-89f8-babb829fb85e	Chives	2020-04-22 11:53:32.242735+00	2020-04-22 11:53:32.242735+00
+79fa5df5-5a82-402f-85a1-9dc78e1dbe63	Vegetable oil	2020-04-22 11:53:32.242735+00	2020-04-22 11:53:32.242735+00
+a19046ce-9e66-4769-a4a0-30dcf8d629fa	All-purpose flour	2020-04-22 11:53:32.242735+00	2020-04-22 11:53:32.242735+00
+ecd694bc-9b0c-4b38-b0c7-b448fe74c7a3	Puff pastry	2020-04-22 11:53:32.242735+00	2020-04-22 11:53:32.242735+00
+ca2a288d-b4c5-446b-a8a5-93c1ac919b14	Couscous	2020-04-22 11:58:24.796938+00	2020-04-22 11:58:24.796938+00
+ac14fd14-000b-41f0-92e4-a5f9cf0b4c56	Boiled water	2020-04-22 11:58:24.796938+00	2020-04-22 11:58:24.796938+00
+687192e1-e5f8-4873-a497-7d44107e1fee	Dried coriander	2020-04-22 12:00:36.846856+00	2020-04-22 12:00:36.846856+00
+fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	Cumin	2020-04-22 12:00:36.846856+00	2020-04-22 12:00:36.846856+00
+ac2f662e-bda2-4712-8d64-8879913d4f90	Chickpeas	2020-04-22 12:00:36.846856+00	2020-04-22 12:00:36.846856+00
+f874bec8-3c6a-40df-8434-7e853e2630ae	Sundried tomatoes	2020-04-22 12:00:36.846856+00	2020-04-22 12:00:36.846856+00
+c41906ef-750f-440c-9005-3abd1a56ca4c	Rocket	2020-04-22 12:00:36.846856+00	2020-04-22 12:00:36.846856+00
+c0435e91-15d5-4816-bf56-11dabbd9174f	Feta	2020-04-22 12:00:36.846856+00	2020-04-22 12:00:36.846856+00
+f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	Fresh coriander	2020-04-22 12:03:51.993022+00	2020-04-22 12:03:51.993022+00
+a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	Cauliflower	2020-04-22 12:24:21.575121+00	2020-04-22 12:24:21.575121+00
+17762568-cd7e-437c-b592-2fcad58eb00d	Agave nectar	2020-04-22 12:28:00.452607+00	2020-04-22 12:28:00.452607+00
+ac388e5f-eb9a-4f42-86e7-a4f6a056ddea	Rice vinegar	2020-04-22 12:28:58.694966+00	2020-04-22 12:28:58.694966+00
+d487ca26-f1a0-4483-87ae-5cd5d457bddc	Tomato purée	2020-04-22 12:29:31.301073+00	2020-04-22 12:29:31.301073+00
+ba8a2088-4462-4b9f-8217-a38282bed6b3	Sriracha	2020-04-22 12:30:13.356938+00	2020-04-22 12:30:13.356938+00
+278573ce-1406-4d45-a02f-e2ccbf23642f	Granulated sugar	2020-04-22 12:39:44.893064+00	2020-04-22 12:39:44.893064+00
+2b66a1e2-3722-4533-946d-5dc4d544d373	Avocado	2020-04-22 12:39:44.893064+00	2020-04-22 12:39:44.893064+00
+d5d282d2-db82-450d-939e-a8066173b752	Greek yoghurt	2020-04-22 12:39:44.893064+00	2020-04-22 12:39:44.893064+00
+06b5086d-99c2-4b3e-b5c6-679ca088cdba	Tortillas	2020-04-22 12:39:44.893064+00	2020-04-22 12:39:44.893064+00
+53d70d11-b899-41c2-8bed-fff1e6bf8e56	Red cabbage	2020-04-22 12:41:30.755236+00	2020-04-22 12:41:30.755236+00
+2bf73169-bd4d-4a25-a012-9816d82060f1	Chili powder	2020-04-22 12:42:49.681039+00	2020-04-22 12:42:49.681039+00
+614243d3-5248-413e-8e36-c8e81fd8fc5c	Potatoes	2020-04-22 13:53:21.39603+00	2020-04-22 13:53:21.39603+00
+782c6485-06d4-43e2-a818-a9ff92532223	Cottage cheese	2020-04-22 13:53:21.39603+00	2020-04-22 13:53:21.39603+00
+73cdbb23-5507-4455-9e7e-8d465b929588	Dill	2020-04-22 13:56:34.330216+00	2020-04-22 13:56:34.330216+00
+737cec9a-73de-4f7f-b22c-22fc77c37492	Ginger (fresh)	2020-04-22 11:06:24.434093+00	2020-04-22 11:06:24.434093+00
+28766e18-3a39-4ee6-a6e2-a8e340847ea0	Ginger (ground)	2020-04-22 13:59:36.700369+00	2020-04-22 13:59:36.700369+00
+8fbe8288-022f-481e-abec-998afea2a6c0	Basmati rice	2020-04-22 14:04:29.706474+00	2020-04-22 14:04:29.706474+00
+38b8065d-9d19-41ee-9965-3722b1d83a8b	Jasmine rice	2020-04-22 14:04:29.706474+00	2020-04-22 14:04:29.706474+00
+8de987e8-afcc-4c1a-9fcc-c5931a614829	Curry powder	2020-04-22 14:11:40.220877+00	2020-04-22 14:11:40.220877+00
+d3b58f01-5da3-4a23-b0f0-5804b09e3995	Sweet potato	2020-04-22 14:13:52.963847+00	2020-04-22 14:13:52.963847+00
+657bf6f2-99f8-4afa-8656-1370634b529f	Halloumi	2020-04-22 14:14:25.493043+00	2020-04-22 14:14:25.493043+00
+34cb469d-415c-4721-9849-dd9a217bd7ee	Chili pepper	2020-04-22 14:14:25.493043+00	2020-04-22 14:14:25.493043+00
+fc4da1a7-9bbe-4b4d-a3c1-0d971fd7dd0b	TABASCO® sauce	2020-04-22 14:35:28.361666+00	2020-04-22 14:35:28.361666+00
+677b7045-44fd-4a05-992c-552591f42457	Mayonnaise	2020-04-22 14:35:54.562234+00	2020-04-22 14:35:54.562234+00
+e4ff0a36-3db1-42fb-b8dd-002df663e5a2	Chipotle	2020-04-22 14:37:05.942085+00	2020-04-22 14:37:05.942085+00
+a8120ffe-0648-4671-bd26-772b8dacb21f	Paprika	2020-04-22 14:37:05.942085+00	2020-04-22 14:37:05.942085+00
+6f7c50aa-2179-4b51-9c17-d490d8d8fe24	Oregano	2020-04-17 13:31:33.962134+00	2020-04-17 13:31:33.962134+00
+0cae4bc8-72d6-40d1-86ec-dc381de9bc61	Lentils	2020-04-22 14:42:31.908105+00	2020-04-22 14:42:31.908105+00
+b3701ae4-f6f7-43b2-87a4-8ff32788c86b	Coconut milk	2020-04-22 14:43:42.084044+00	2020-04-22 14:43:42.084044+00
+776e873a-3cba-490f-aa33-7820667c3997	Massaman-Curry-Paste	2020-04-22 14:44:02.037649+00	2020-04-22 14:44:02.037649+00
+feb70ace-966f-4792-ae8a-167e49f7b854	Peanuts	2020-04-22 14:47:59.741198+00	2020-04-22 14:47:59.741198+00
+2b9b770b-b888-4f36-a0f9-3a4d4f65270e	Peanut butter	2020-04-22 14:47:59.741198+00	2020-04-22 14:47:59.741198+00
+62783a87-b1bc-4248-960f-2b67ad5a5396	Green beans	2020-04-22 14:47:59.741198+00	2020-04-22 14:47:59.741198+00
+0761e4ba-8a2d-4d1d-9986-5b5334984585	Mini fladen breads	2020-04-22 14:47:59.741198+00	2020-04-22 14:47:59.741198+00
+0bc7b491-a23d-44f0-94ff-5fb04df3d298	Breadcrumbs	2020-04-22 14:52:55.112183+00	2020-04-22 14:52:55.112183+00
+405f8af2-d2a2-479d-a345-01d4c4a26bb2	Leek	2020-04-22 14:52:55.112183+00	2020-04-22 14:52:55.112183+00
+75443b33-3a02-465b-a8f2-5cb88c0c3362	Saffron threads	2020-04-22 14:57:56.441495+00	2020-04-22 14:57:56.441495+00
+3a50e56d-1bd8-4003-beff-38466417e72a	Risotto rice	2020-04-22 14:57:56.441495+00	2020-04-22 14:57:56.441495+00
+561a1085-d277-4418-b7c1-58a2d983a50d	Red bell pepper	2020-04-22 14:59:10.940416+00	2020-04-22 14:59:10.940416+00
+7ce9c46e-3b9a-492f-8571-6bc9423dceae	Black beans	2020-04-22 15:21:14.718848+00	2020-04-22 15:21:14.718848+00
+4aa9ef25-1407-42ee-a1da-a9e0a44dc41c	Baby gem lettuce	2020-04-22 15:21:14.718848+00	2020-04-22 15:21:14.718848+00
+3fb3c62a-4d3d-404b-8862-c4f33eaa0467	Corn on the cob	2020-04-22 15:21:14.718848+00	2020-04-22 15:21:14.718848+00
+9d8d121c-4901-46d6-90a6-c38bf33419f4	Peach	2020-04-22 15:36:23.181447+00	2020-04-22 15:36:23.181447+00
+99a127f6-986d-4068-bab2-d2a25d514f15	Chocolate	2020-04-22 15:36:23.181447+00	2020-04-22 15:36:23.181447+00
+9770ed14-9b8c-47a0-97a1-f9d80b59d8ee	Almonds	2020-04-22 15:36:23.181447+00	2020-04-22 15:36:23.181447+00
+6f8adb2d-11ed-44b7-b409-85be16c187ac	Baking powder	2020-04-22 15:36:23.181447+00	2020-04-22 15:36:23.181447+00
+074389cb-8204-4558-a0b3-13150c025d7d	Fladenbrot	2020-04-22 15:42:34.23737+00	2020-04-22 15:42:34.23737+00
+08081ae7-51e8-4f66-a6f6-1281dd2bcfdb	Plain yoghurt	2020-04-22 15:43:43.719247+00	2020-04-22 15:43:43.719247+00
+e99e29f6-b34b-4d6a-8abf-49d22b9ea8ba	Salad mix	2020-04-22 15:43:43.719247+00	2020-04-22 15:43:43.719247+00
+384cc94e-5808-4ef6-bfe4-a75e07628370	Cherry tomatoes	2020-04-22 15:48:08.644862+00	2020-04-22 15:48:08.644862+00
+f16f46ef-1fe0-4a95-bdc9-45d83635f92a	Balsamic vinegar	2020-04-22 15:49:56.675138+00	2020-04-22 15:49:56.675138+00
+474d1027-20b6-415a-bd88-d9266910a495	Fresh basil	2020-04-22 15:49:56.675138+00	2020-04-22 15:49:56.675138+00
+af3751c0-f7ea-441a-b119-0efb6cfc80da	Conchiglie (pasta shells)	2020-04-17 13:36:29.669151+00	2020-04-17 13:36:29.669151+00
+097657ed-7f01-4632-a54c-79504e8c819f	Garam masala	2020-04-22 16:20:42.938328+00	2020-04-22 16:20:42.938328+00
+6e9a76cc-93a3-49d2-a51a-00f897e0ca27	Fresh thyme	2020-04-22 16:34:14.073333+00	2020-04-22 16:34:14.073333+00
+9e68660c-748e-4163-8a2b-14f685897ebe	Cinnamon	2020-04-22 16:35:06.506778+00	2020-04-22 16:35:06.506778+00
+26e9ec81-1a6f-41c9-83b1-9a142692b061	Aubergine	2020-04-22 16:36:13.524062+00	2020-04-22 16:36:13.524062+00
+50941912-d671-4929-9e95-649d1bc44c99	Ricotta cheese	2020-04-22 16:37:00.488011+00	2020-04-22 16:37:00.488011+00
+b8e8dbe9-a9f0-4f26-81c5-16609c32dc66	Chinese lettuce	2020-04-22 16:41:03.817689+00	2020-04-22 16:41:03.817689+00
+787a2eb8-1a18-4c12-94a2-2b437c70098d	Bean sprouts	2020-04-22 16:41:44.867822+00	2020-04-22 16:41:44.867822+00
+3e51ac48-e84a-4efc-acb2-bf90221ed6af	Mange tout	2020-04-22 16:41:44.867822+00	2020-04-22 16:41:44.867822+00
+0b40e44f-2f9b-4c9c-b083-9a2aecb92ae7	Ready to eat noodles	2020-04-22 16:42:42.527115+00	2020-04-22 16:42:42.527115+00
+e0758d3b-9a52-4d69-87a8-b334b00fc7ca	Penne pasta	2020-04-22 16:46:59.031555+00	2020-04-22 16:46:59.031555+00
+987dd641-a348-4691-a2c3-62103c8fec9f	Wholegrain mustard	2020-04-22 16:48:23.329876+00	2020-04-22 16:48:23.329876+00
+af38b9f4-78e1-4002-8200-96878caf3efd	Nutmeg	2020-04-22 16:49:12.802496+00	2020-04-22 16:49:12.802496+00
+9b9ba441-79db-4b5f-8f19-bc25b3f4d1f7	Chopped walnuts	2020-04-22 16:51:45.94995+00	2020-04-22 16:51:45.94995+00
+94447a68-6570-4b82-8e66-013ab2116629	Green bell pepper	2020-04-22 16:54:22.388705+00	2020-04-22 16:54:22.388705+00
+71791579-2b8c-41e0-971c-f2ea3c1dcfb6	Burger buns	2020-04-22 16:56:46.39593+00	2020-04-22 16:56:46.39593+00
+98d6f6ee-6f4e-4b42-a8b6-05ecd111cae7	Chili oil	2020-04-22 16:59:32.185215+00	2020-04-22 16:59:32.185215+00
+912d66c6-3353-4b5b-adf9-ce04c3e3a0df	Shallots	2020-04-22 17:00:53.223501+00	2020-04-22 17:00:53.223501+00
+f7f9a233-bc0d-46e4-b8d2-dfbc7826c44a	Lime juice	2020-04-22 17:03:03.312946+00	2020-04-22 17:03:03.312946+00
+d6947cf4-58ed-4bd0-aaad-4fd576268204	Palm sugar	2020-04-22 17:04:29.70542+00	2020-04-22 17:04:29.70542+00
+0706b53a-af96-4a67-bd7e-e8e6d1d79384	Oyster sauce	2020-04-22 17:04:47.906722+00	2020-04-22 17:04:47.906722+00
+c822cd47-2fb1-4a08-a8aa-a96a0f5d0df5	Marjoram	2020-04-22 17:16:59.396245+00	2020-04-22 17:16:59.396245+00
+d11c609f-ce7f-45b0-a08c-43c5ab2f0bad	Coconut oil	2020-04-22 17:24:41.048096+00	2020-04-22 17:24:41.048096+00
+40cf7010-831d-47c3-9479-ec5b47397bbe	Red curry paste	2020-04-22 17:25:20.923771+00	2020-04-22 17:25:20.923771+00
+b4f319d9-c25d-4dec-8991-0709a529d593	Lasagne sheets	2020-04-22 17:30:59.280075+00	2020-04-22 17:30:59.280075+00
+b138947c-9cf1-4b45-abc9-9134b87b4ef2	Cayenne pepper	2020-04-22 17:39:00.392725+00	2020-04-22 17:39:00.392725+00
+513c08fc-18c2-44f5-94f8-dffdd456bd90	Red wine vinegar	2020-04-22 17:52:46.053636+00	2020-04-22 17:52:46.053636+00
+6cbc3f97-40bf-46e8-a66f-3f603457b262	Indian curry paste	2020-04-22 17:57:19.67453+00	2020-04-22 17:57:19.67453+00
+5283e6f7-b700-4594-bf28-07ee22382c7d	Filo pastry	2020-04-22 17:58:46.461396+00	2020-04-22 17:58:46.461396+00
+43a6f028-3d25-47ec-975b-1b5e41dfda19	Rhubarb	2020-04-22 18:05:11.425597+00	2020-04-22 18:05:11.425597+00
+bf52e7ca-b96b-4a7a-ab6e-251711356e29	Self-raising flour	2020-04-22 18:07:21.280499+00	2020-04-22 18:07:21.280499+00
+285f4032-29dc-4c3d-9280-dfd303e69fd5	Oats	2020-04-22 18:07:21.280499+00	2020-04-22 18:07:21.280499+00
+29e50bfd-2173-479e-833f-4087584b38f9	Brown sugar	2020-04-22 18:09:11.486023+00	2020-04-22 18:09:11.486023+00
+a812ea49-0a11-4970-8e06-b5560999740f	Cocoa powder	2020-04-22 18:11:36.649349+00	2020-04-22 18:11:36.649349+00
+f528e891-0838-425d-9521-6818894e8b7b	Heavy cream	2020-04-22 18:12:57.783063+00	2020-04-22 18:12:57.783063+00
+752edad3-c2bf-47c6-aa39-0922e2151917	Egg yolks	2020-04-22 18:13:03.533501+00	2020-04-22 18:13:03.533501+00
+288ce290-b36b-479e-bcfb-876cc4e21917	Vanilla extract	2020-04-22 18:13:19.325154+00	2020-04-22 18:13:19.325154+00
+01ec7734-eb32-4e31-9707-2cee7567229d	Celery stalks	2020-04-22 18:23:09.096097+00	2020-04-22 18:23:09.096097+00
+\.
+
+
+--
+-- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.labels (uuid, name, colour, created_at, updated_at) FROM stdin;
+9ead3bd2-67bf-4bed-b029-b259e7e1f483	lunch	#FFFF33	2020-04-06 11:13:53.49392+00	2020-04-06 11:13:53.49392+00
+2138fab8-8cec-4cf7-9dd0-9b14b03cd328	dessert	#CA33FF	2020-04-06 11:13:53.49392+00	2020-04-06 11:13:53.49392+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	dinner	#3358FF	2020-04-06 11:13:53.49392+00	2020-04-06 11:13:53.49392+00
+357e106e-1b07-45a9-9004-c84490ee7087	really yummy	#61BE4F	2020-04-21 14:08:22.027933+00	2020-04-21 14:08:22.027933+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	hellofresh	#FF77CB	2020-04-21 14:08:22.027933+00	2020-04-21 14:08:22.027933+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	it's ok	#FF9F1A	2020-04-21 14:08:22.027933+00	2020-04-21 14:08:22.027933+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	it's pretty good	#F2D600	2020-04-21 14:08:22.027933+00	2020-04-21 14:08:22.027933+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	juice	#66FF00	2020-04-22 18:32:28.926347+00	2020-04-22 18:32:28.926347+00
+\.
+
+
+--
+-- Data for Name: photos; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.photos (uuid, title, url, recipe_id, created_at, updated_at) FROM stdin;
+feb705c6-dfe6-498b-8a29-c4a57ed60e8e	bibimbap-koreanische-gemusebowl	https://img.hellofresh.com/c_fit,f_auto,fl_lossy,h_1100,q_auto,w_2600/hellofresh_s3/image/hello-bibimbap-koreanische-gemusebowl-68ec14c8.jpg	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:11:18.674067+00	2020-04-06 12:11:18.674067+00
+9c3363b4-741e-49eb-a66e-a9f59bc5ba96	caprese-sandwich	https://jessicainthekitchen.com/wp-content/uploads/2014/05/Caprese-Sandwich-with-Parsley-Pesto-2.jpg	335f40ed-072f-49f5-9c8c-d4a73258eb41	2020-04-22 11:46:42.280781+00	2020-04-22 11:46:42.280781+00
+519e56b9-a397-4008-b278-f56e2c3b472a	broccoli-pockets	https://trello-attachments.s3.amazonaws.com/54a9836289832325950b467e/616x462/cfee31e37655a4fedf054d4341acf012/FNM_100111-Hot-Pockets-001_s4x3.jpg.rend.sni18col.jpeg	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-22 11:50:44.504781+00	2020-04-22 11:50:44.504781+00
+494ef1b4-ab0f-4a8a-be45-ca7403e05ca7	couscous-salad	https://www.recipetineats.com/wp-content/uploads/2018/01/Couscous-Salad-with-Sun-Dried-Tomato_4.jpg	ea7c374c-310e-4b83-ab94-06170b271168	2020-04-22 11:57:45.100624+00	2020-04-22 11:57:45.100624+00
+f214949a-6876-48b0-901e-070c202cd0ff	sticky-sesame-cauliflower	https://yupitsvegan.com/wp-content/uploads/2017/01/sticky-sesame-cauliflower-vegan-6.jpg	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:16:00.524207+00	2020-04-22 12:16:00.524207+00
+fc1c4d78-9f34-46e1-8ab1-4bcb77c463be	cauliflower-tacos	https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fit,w_1460,h_974/k%2Farchive%2Fc86a207b502bbb1b419b4e4ea6d51a876b96d3d1	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:38:33.311945+00	2020-04-22 12:38:33.311945+00
+8fdd0907-6ffa-4bfe-bc06-579d0348ade7	pierogi	https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/rafaels_pierogi_93244_16x9.jpg	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:52:06.056685+00	2020-04-22 13:52:06.056685+00
+361ea73f-9440-4e6e-8dff-c469f1b7ac86	veg-curry	https://img.taste.com.au/BgihbvK5/w720-h480-cfill-q80/taste/2016/11/vegetable-madras-curry-108863-1.jpeg	82595eba-6f0a-4d50-99fd-f5a346ca5783	2020-04-22 14:12:37.330726+00	2020-04-22 14:12:37.330726+00
+5a9ca7ba-e1b9-4906-afd9-7302bedd9416	veg-halloumi-bowl	https://img.hellofresh.com/f_auto,fl_lossy,q_auto,w_680/hellofresh_s3/5ac73d9cae08b5475b3aa902/step-862bf874.jpg	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-22 14:13:26.15881+00	2020-04-22 14:13:26.15881+00
+f5d74629-2aac-4fce-a01f-849bfd69775d	mexican-enchiladas	https://www.deliaonline.com/sites/default/files/styles/square_400/public/quick_media/htc-mexican-enchiladas-with-cheese.jpg	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-22 14:22:55.496207+00	2020-04-22 14:22:55.496207+00
+3248d655-47fa-460f-81ca-1efc9f864fe8	sweet-potato-tacos	https://img.hellofresh.com/c_fit,f_auto,fl_lossy,h_1100,q_auto,w_2600/hellofresh_s3/image/5a7aed3aae08b54e70573a82-0b941121.jpg	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-22 14:30:00.462301+00	2020-04-22 14:30:00.462301+00
+0be2f408-dead-445a-b277-98460104c1a5	massaman-curry	https://img.hellofresh.com/c_fit,f_auto,fl_lossy,h_1100,q_auto,w_2600/hellofresh_s3/image/vegetarisches-massaman-curry-e9d64757.jpg	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-22 14:40:04.868346+00	2020-04-22 14:40:04.868346+00
+e3de5e5e-4e77-4355-9a37-9bbc7467593f	peanut-stew	https://img.hellofresh.com/f_auto,fl_lossy,q_auto,w_680/hellofresh_s3/step/58d3c945171c58514c54e631-5-0-f392d899.jpg	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-22 14:47:04.859313+00	2020-04-22 14:47:04.859313+00
+dfbe2e77-db1a-4f55-aba0-08919ff052f7	lemon-cauliflower	https://img.hellofresh.com/f_auto,fl_lossy,q_auto,w_680/hellofresh_s3/5a6600cf7cc0c10f925eb522/step-05d6ede8.jpg	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-22 14:52:18.041136+00	2020-04-22 14:52:18.041136+00
+7902345f-1837-418e-bb34-43159ab74f32	summer-risotto-saffron	https://img.hellofresh.com/c_fit,f_auto,fl_lossy,h_1100,q_auto,w_2600/hellofresh_s3/image/sommerliches-risotto-mit-safran-9b3bf001.jpg	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-22 14:57:16.550114+00	2020-04-22 14:57:16.550114+00
+68ca2bfa-ddb4-4fbb-a91f-4908561658dd	quickdraw-quesadillas	https://trello-attachments.s3.amazonaws.com/54823319ea7b828c1233a5c3/5db198eea19b686b92dd5273/420922d435dedece53854e05e850145d/quickdraw-quesadillas-e296a684.jpg	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-22 15:21:46.296741+00	2020-04-22 15:21:46.296741+00
+b5a10e7b-22d3-4fc2-8990-2a46812f6b39	chocolate-bean-brownies	https://trello-attachments.s3.amazonaws.com/54823319ea7b828c1233a5c3/5c193bb9806dd67ff04c0e2d/cdc9b4c8a3b713e228f7c4a53f07a18f/schwarze-bohnen-brownie-f32a4893.jpg	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-22 15:35:02.287639+00	2020-04-22 15:35:02.287639+00
+ec812476-8bef-4e29-8985-e92f9f398f1f	veg-fladen-kebab	https://trello-attachments.s3.amazonaws.com/54823319ea7b828c1233a5c3/5c193b6e56bed2887688f937/0a553223836b71d93f8e4fad0be50b6c/5bb23db2ae08b5328333e8a2-44e1b7aa.jpg	385aaaea-d972-48cc-b873-772ada74c644	2020-04-22 15:41:10.786845+00	2020-04-22 15:41:10.786845+00
+c58e7495-0f1b-4b44-a1be-2799d5281483	tomato-veg-risotto	http://wallflowerkitchen.com/wp-content/uploads/2017/08/TomatoRisotto1.jpg	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-22 15:46:39.238803+00	2020-04-22 15:46:39.238803+00
+bc929c59-2668-42c7-9840-c2b046c60591	butternut-pasta-shells	https://www.gimmesomeoven.com/wp-content/uploads/2014/10/Butternut-Alfredo-Baked-Shells-1.jpg	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-22 15:54:32.511414+00	2020-04-22 15:54:32.511414+00
+5e64dced-132e-4542-9152-fceb7a98cd73	sweet-potato-katsu	https://www.jvs.org.uk/wp-content/uploads/2017/11/unnayymed.jpg	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-22 16:25:00.473359+00	2020-04-22 16:25:00.473359+00
+5ec0fc92-85ac-4f47-89bc-343789f1d431	roasted-potato-power-bowl	https://trello-attachments.s3.amazonaws.com/5d4f0cb1e8697e7a51a87595/680x1020/3863a2a5cf3acf12ca38f298727f8646/image.png	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-22 16:25:44.623575+00	2020-04-22 16:25:44.623575+00
+07261e0d-b5d3-4a28-9004-68b1f7bfb71e	vegetarian-moussaka	https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/red_lentil_and_aubergine_33187_16x9.jpg	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-22 16:32:02.490693+00	2020-04-22 16:32:02.490693+00
+5e339c48-703d-4849-9271-8e5edded64be	satay-stirfry	https://1v2tjp81p3k1k65g14acd8d1-wpengine.netdna-ssl.com/wp-content/uploads/2016/01/Satay-Vegetable-Stir-Fry-RS-N.jpg	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-22 16:38:26.443562+00	2020-04-22 16:38:26.443562+00
+9b70fd0f-6ecc-4fbb-9826-96f1481fdb80	cheesy-broccoli-bake	https://www.bbcgoodfood.com/sites/default/files/styles/recipe/public/recipe_images/recipe-image-legacy-id--197477_10.jpg?itok=akO9oB-b	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-22 16:46:08.074935+00	2020-04-22 16:46:08.074935+00
+df025856-170d-43dd-a61f-5777e02f1d67	veggie-burgers	https://www.peta.org/wp-content/uploads/2016/11/Black-Bean-Veggie-Burger-602x401.jpg	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-22 16:53:11.405073+00	2020-04-22 16:53:11.405073+00
+180db430-9864-4c23-b243-0acc842088e0	pad-phak-ruam-mit	https://importfood.com/images/com_yoorecipe/22/cropped-pad_pak_2l.jpg	b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2020-04-22 17:07:18.721027+00	2020-04-22 17:07:18.721027+00
+6fbfca1f-6b27-4e75-a647-56aa4b018688	cauliflower-dhal	https://img.hellofresh.com/c_fit,f_auto,fl_lossy,h_1100,q_auto,w_2600/hellofresh_s3/image/warming-cauliflower-dal-f79e0d11.jpg	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-22 17:14:16.978423+00	2020-04-22 17:14:16.978423+00
+0015cca7-dc97-4c28-9475-c25936f49d5d	aubergine-parmesan	https://www.gimmesomeoven.com/wp-content/uploads/2015/07/Eggplant-Parmesan-61.jpg	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-22 17:22:04.998437+00	2020-04-22 17:22:04.998437+00
+66e7f6c2-0cff-4712-b966-ad8b8752e577	curry-satay-veggie-bowls	https://www.gimmesomeoven.com/wp-content/uploads/2018/04/Curried-Satay-Veggie-Bowls-Recipe-2-1.jpg	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-22 17:23:03.532118+00	2020-04-22 17:23:03.532118+00
+8d110679-1284-41f6-afdf-bdc9ecc134db	mediterranean-lasagne	https://production-media.gousto.co.uk/cms/mood-image/902---Four-Veg-Ratatouille-Lasagne-x750.jpg	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-22 17:30:00.26985+00	2020-04-22 17:30:00.26985+00
+d19dc500-a5d6-4fc9-9d00-6c67733d0293	spinach-lentil-dhal	https://www.bbcgoodfood.com/sites/default/files/styles/recipe/public/recipe/recipe-image/2016/03/spinach-sweet-potato-and-lentil-dhal.jpg?itok=zPRVRh8y	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-22 17:30:00.26985+00	2020-04-22 17:30:00.26985+00
+43841a14-013b-4d65-bb47-92c75d9a9183	sweet-potato-fajitas	https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fit,w_1460,h_2191/k%2Farchive%2F16d1239a42dbe82858ed82904941bc0628a2d976	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-22 17:30:00.26985+00	2020-04-22 17:30:00.26985+00
+31d8fd51-130a-435a-ae8f-c84a15e739e2	grilled-veggie-wraps	https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/quesadillaswithbarbe_1047_16x9.jpg	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-22 17:30:00.26985+00	2020-04-22 17:30:00.26985+00
+b1fd13c7-01f4-490f-aecc-2a654613b54d	lasagne-rolls	https://trello-attachments.s3.amazonaws.com/575af9c55dbc462a8e081bea/300x300/4c0a8f3b460084409320f15f49496d12/lasagna-roll-ck-604779-x.jpg	3854e245-9420-45bf-8c1b-ae5034132673	2020-04-22 17:48:15.806511+00	2020-04-22 17:48:15.806511+00
+516d80b5-985e-40f7-8264-4aa7935d3a3f	bombay-potato-spinach-pie	https://www.bbcgoodfood.com/sites/default/files/styles/recipe/public/recipe_images/recipe-image-legacy-id--699471_11.jpg?itok=k1PXtZEV	b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	2020-04-22 17:48:15.806511+00	2020-04-22 17:48:15.806511+00
+c07afe89-cb81-4db7-92e3-7843bd44fb29	flatbread-3-ingredients	https://i2.wp.com/www.biggerbolderbaking.com/wp-content/uploads/2018/07/3-Ingredient-bread1.jpg?w=1214&ssl=1	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-22 18:01:13.56966+00	2020-04-22 18:01:13.56966+00
+f0336ac0-0d92-481c-a4c1-8602e50c0d5f	apple-rhubarb-crumble	https://img.sndimg.com/food/image/upload/c_thumb,q_80,w_721,h_406/v1/img/recipes/10/07/8/picTf49TL.jpg	48cf280e-9329-4c39-a7de-b49350de47b5	2020-04-22 18:02:09.064866+00	2020-04-22 18:02:09.064866+00
+d6d0b87d-02fc-4634-9a06-d1beeeec1ab8	micro-choc-cake	http://ukcdn.ar-cdn.com/recipes/port500/945c0f22-988a-4c32-8dc5-d9f95fb80429.jpg	4adcf298-afb7-4ca1-ab87-3a99a92d99cf	2020-04-22 18:02:09.064866+00	2020-04-22 18:02:09.064866+00
+62cbc81f-61d3-46f1-a0e2-427f2b178549	easy-creme-brulee	https://www.asweetpeachef.com/wp-content/uploads/2014/06/easy-creme-brulee.jpg	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-22 18:02:27.961122+00	2020-04-22 18:02:27.961122+00
+5ab2295f-012a-48ca-b7ec-00cefd343f9f	apple-lemon-ginger-juice	https://thehealthyeatingsite.com/wp-content/uploads/lemon-apple-ginger-2-225x300.jpg	76fa7744-1fa1-4669-b7d9-c84e4fe270d9	2020-04-22 18:26:00.073461+00	2020-04-22 18:26:00.073461+00
+d0d27459-fa7b-4342-a2d3-41faee341596	kale-apple-lemon-juice	https://trello-attachments.s3.amazonaws.com/55f4262826fc3a280c5f7e91/650x450/4e28186e8ae55fe839d70be81caded95/mainfavouritespinachjuice.jpg	f3b719ea-3ab6-4b95-8305-7c3e39d84227	2020-04-22 18:28:22.847151+00	2020-04-22 18:28:22.847151+00
+6e1b3bf9-89d2-4369-aa2b-b90de61c0f29	mean-green-juice	https://juicerecipes.com/media/cache/16/03/160387191fa8af245a5b4a20befcac5f.jpg	f8212ef2-8166-44fe-bde9-d18ffc0c65d9	2020-04-22 18:28:22.847151+00	2020-04-22 18:28:22.847151+00
+c30717d5-116c-4a7e-b06d-cc96f313f7bf	apple-carrot-ginger-juice	https://trello-attachments.s3.amazonaws.com/54e639c3a13f9dc87de03b77/512x768/1609a06b3ae82601b4b37a4c781bdbaa/Skin-Smoothing-Carrot-Apple-Ginger-Juice-GI-365-2-1.jpg	b42b5a5e-b65f-41ab-82fa-437fa661153e	2020-04-22 18:28:22.847151+00	2020-04-22 18:28:22.847151+00
+9c4dd6ac-b327-4d4d-be43-1f688fa4001b	wagamama-raw-juice	https://trello-attachments.s3.amazonaws.com/54ce1d1beb382d4674946c34/400x275/ed527509ae2b08858dc7d70f2d0f46bf/raw-juice-main.jpg	86b73a62-4d28-4362-bdef-90d6576f438b	2020-04-22 18:28:22.847151+00	2020-04-22 18:28:22.847151+00
+658aaa97-56a2-421c-9f07-f2a053104f80	electric-green-limeade	https://trello-attachments.s3.amazonaws.com/54fdf53399f2ab646dafb9a8/533x800/d97d90a4da0ec8053f5b99d3ffa4b905/MG_1477.jpg	05f05ddf-d67d-47b0-8365-4a84f4fe1e17	2020-04-22 18:30:21.414922+00	2020-04-22 18:30:21.414922+00
+5618dcf8-4130-4105-b08b-f98b2f9987f2	berry-a-peeling-juice	https://juicerecipes.com/media/cache/93/98/939889394fe9184f663927615bf12783.jpg	532f2790-9c84-42ac-abc0-3a6ca6b0497e	2020-04-22 18:30:21.414922+00	2020-04-22 18:30:21.414922+00
+db08b597-9ecb-4061-a691-3866a048c4b2	easy-homemade-lemonade	https://www.bbcgoodfood.com/sites/default/files/styles/recipe/public/recipe_images/recipe-image-legacy-id--559606_11.jpg?itok=LO5O2i-i	40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	2020-04-22 18:30:21.414922+00	2020-04-22 18:30:21.414922+00
+2106e154-73d3-4b1c-a404-6d8dd01f140f	golden-glow-juice	https://www.theglowingfridge.com/wp-content/uploads/2015/01/Golden-Glow-Elixir-Main.jpg	b9cedac1-5bb6-4c3d-88a5-947e7184051e	2020-04-22 18:30:21.414922+00	2020-04-22 18:30:21.414922+00
+\.
+
+
+--
+-- Data for Name: recipe_ingredient; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.recipe_ingredient (recipe_id, ingredient_id, unit_id, created_at, updated_at, quantity) FROM stdin;
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	36af3356-aa3e-4665-8ebd-146d80c321ee	5b016058-842f-445f-839d-0605af883b49	2020-04-06 11:41:49.670896+00	2020-04-06 11:41:49.670896+00	2
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	67565f55-5acc-4ae4-8cb2-efff35a3075a	5b016058-842f-445f-839d-0605af883b49	2020-04-06 12:03:29.669276+00	2020-04-06 12:03:29.669276+00	2
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-06 12:03:29.669276+00	2020-04-06 12:03:29.669276+00	2
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	1f56087c-cc2d-4d4c-987e-3958d3af38bb	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-06 12:03:29.669276+00	2020-04-06 12:03:29.669276+00	10
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2126cfb2-6868-4c7c-acc1-f534d8ad3572	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	1
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	51d7eafd-e7dd-42b2-849a-36701cc9bce4	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	40
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	b35bdf2f-4c7d-4f58-a788-fb711a0398e6	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	100
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	88eae677-0610-49a1-8b43-70815c25fa87	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	50
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	cad81b48-cc93-4a30-8320-65b5a8dc68da	5b016058-842f-445f-839d-0605af883b49	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	2
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	09333b91-b223-4bc2-b32c-f33f7bf75d15	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	15
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	f61c7096-ad2e-41fb-b821-d57bc5766d5c	5b016058-842f-445f-839d-0605af883b49	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	1
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	62e983ae-7ab5-4be7-8393-4b7d7b5e3100	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	20
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	1de6d0ea-d9e9-40dd-88c6-5ee0d5941df6	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	8
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	e9a2e878-9b8c-494a-acb9-3f69792960b2	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-06 12:06:56.567761+00	2020-04-06 12:06:56.567761+00	150
+d05b2081-7ad8-417a-ba30-bb9e8171f156	f3d99221-5cc0-42a9-8ade-4343a3f38719	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	30
+d05b2081-7ad8-417a-ba30-bb9e8171f156	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	14
+d05b2081-7ad8-417a-ba30-bb9e8171f156	d3d47e4b-6fbd-4015-8489-037e975fdf44	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	8
+d05b2081-7ad8-417a-ba30-bb9e8171f156	af3751c0-f7ea-441a-b119-0efb6cfc80da	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	200
+d05b2081-7ad8-417a-ba30-bb9e8171f156	7d0f3d48-4725-4af5-940d-a7aca3e8c382	5b016058-842f-445f-839d-0605af883b49	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	1
+d05b2081-7ad8-417a-ba30-bb9e8171f156	0b595038-508a-45db-98b8-0b9372095627	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	100
+b42b5a5e-b65f-41ab-82fa-437fa661153e	36af3356-aa3e-4665-8ebd-146d80c321ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:07:24.318246+00	2020-04-22 11:07:24.318246+00	2
+b42b5a5e-b65f-41ab-82fa-437fa661153e	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:07:24.318246+00	2020-04-22 11:07:24.318246+00	6
+b42b5a5e-b65f-41ab-82fa-437fa661153e	737cec9a-73de-4f7f-b22c-22fc77c37492	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 11:07:24.318246+00	2020-04-22 11:07:24.318246+00	2
+76fa7744-1fa1-4669-b7d9-c84e4fe270d9	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:08:28.178217+00	2020-04-22 11:08:28.178217+00	0.5
+76fa7744-1fa1-4669-b7d9-c84e4fe270d9	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:09:49.876708+00	2020-04-22 11:09:49.876708+00	2
+76fa7744-1fa1-4669-b7d9-c84e4fe270d9	737cec9a-73de-4f7f-b22c-22fc77c37492	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 11:09:49.876708+00	2020-04-22 11:09:49.876708+00	1
+76fa7744-1fa1-4669-b7d9-c84e4fe270d9	776102cd-4659-4282-b613-c23ce90a4f20	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 11:09:49.876708+00	2020-04-22 11:09:49.876708+00	100
+f3b719ea-3ab6-4b95-8305-7c3e39d84227	f61c7096-ad2e-41fb-b821-d57bc5766d5c	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:12:22.337004+00	2020-04-22 11:12:22.337004+00	1
+f3b719ea-3ab6-4b95-8305-7c3e39d84227	873f9073-d5cf-4faf-88c6-1d4897e6b58d	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 11:12:22.337004+00	2020-04-22 11:12:22.337004+00	2
+f3b719ea-3ab6-4b95-8305-7c3e39d84227	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:12:22.337004+00	2020-04-22 11:12:22.337004+00	1
+f3b719ea-3ab6-4b95-8305-7c3e39d84227	3e1e91a1-aa7a-4093-95a2-4645009a91cd	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 11:12:22.337004+00	2020-04-22 11:12:22.337004+00	1
+f3b719ea-3ab6-4b95-8305-7c3e39d84227	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:12:22.337004+00	2020-04-22 11:12:22.337004+00	1
+86b73a62-4d28-4362-bdef-90d6576f438b	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:15:10.29317+00	2020-04-22 11:15:10.29317+00	1
+86b73a62-4d28-4362-bdef-90d6576f438b	179eda03-2e03-4d41-ad95-d9405d000683	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 11:15:10.29317+00	2020-04-22 11:15:10.29317+00	200
+86b73a62-4d28-4362-bdef-90d6576f438b	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:15:10.29317+00	2020-04-22 11:15:10.29317+00	1
+86b73a62-4d28-4362-bdef-90d6576f438b	f61c7096-ad2e-41fb-b821-d57bc5766d5c	537c63ca-883d-4f2f-a12a-9bc033d79675	2020-04-22 11:15:10.29317+00	2020-04-22 11:15:10.29317+00	5
+86b73a62-4d28-4362-bdef-90d6576f438b	36af3356-aa3e-4665-8ebd-146d80c321ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:15:10.29317+00	2020-04-22 11:15:10.29317+00	4
+532f2790-9c84-42ac-abc0-3a6ca6b0497e	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:19:58.82003+00	2020-04-22 11:19:58.82003+00	2
+532f2790-9c84-42ac-abc0-3a6ca6b0497e	1286849c-5718-4076-97cf-0feefc9f400a	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:19:58.82003+00	2020-04-22 11:19:58.82003+00	3
+532f2790-9c84-42ac-abc0-3a6ca6b0497e	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:19:58.82003+00	2020-04-22 11:19:58.82003+00	0.5
+05f05ddf-d67d-47b0-8365-4a84f4fe1e17	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:22:29.174714+00	2020-04-22 11:22:29.174714+00	4
+05f05ddf-d67d-47b0-8365-4a84f4fe1e17	4a9496a7-8374-4c80-9c01-7d2bdbd92b75	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 11:22:29.174714+00	2020-04-22 11:22:29.174714+00	1
+05f05ddf-d67d-47b0-8365-4a84f4fe1e17	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:22:29.174714+00	2020-04-22 11:22:29.174714+00	2
+05f05ddf-d67d-47b0-8365-4a84f4fe1e17	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:22:29.174714+00	2020-04-22 11:22:29.174714+00	2
+40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:25:20.832799+00	2020-04-22 11:25:20.832799+00	3
+40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	58c3c8f2-4fb2-405c-8b03-af07af41f590	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 11:25:20.832799+00	2020-04-22 11:25:20.832799+00	140
+40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	6df97308-8578-4785-9a28-ca602f45d00f	3857b26a-febf-4533-8b59-95bc087783dc	2020-04-22 11:25:20.832799+00	2020-04-22 11:25:20.832799+00	1
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:30:35.886448+00	2020-04-22 11:30:35.886448+00	2
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	cde55457-37f5-4d68-81b9-7036fdce0ddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:30:35.886448+00	2020-04-22 11:30:35.886448+00	2
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:30:35.886448+00	2020-04-22 11:30:35.886448+00	1
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	737cec9a-73de-4f7f-b22c-22fc77c37492	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 11:30:35.886448+00	2020-04-22 11:30:35.886448+00	2
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	6a25ae65-45bd-4017-a17f-7ab245127651	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 11:30:35.886448+00	2020-04-22 11:30:35.886448+00	2
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	6df97308-8578-4785-9a28-ca602f45d00f	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 11:30:35.886448+00	2020-04-22 11:30:35.886448+00	470
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	c9ce8416-9def-4f09-8eb0-eb68cf547b37	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 11:30:35.886448+00	2020-04-22 11:30:35.886448+00	1
+335f40ed-072f-49f5-9c8c-d4a73258eb41	00c8c220-a129-41c5-b324-00851b56d57c	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:36:45.327812+00	2020-04-22 11:36:45.327812+00	1
+335f40ed-072f-49f5-9c8c-d4a73258eb41	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:36:45.327812+00	2020-04-22 11:36:45.327812+00	1
+335f40ed-072f-49f5-9c8c-d4a73258eb41	0b595038-508a-45db-98b8-0b9372095627	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:36:45.327812+00	2020-04-22 11:36:45.327812+00	0.5
+335f40ed-072f-49f5-9c8c-d4a73258eb41	ff82d0d6-1c7a-4601-84c8-bce89cc812c0	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 11:36:45.327812+00	2020-04-22 11:36:45.327812+00	3
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	1
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	a15506fa-6068-4796-8ce9-31b5bd013773	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	260
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	2ece47a3-71e0-412d-88ef-80fe7924c429	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	175
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	6af093e4-9b75-4270-84f6-53264b632137	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	3
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	d44e2ada-2a86-4808-89f8-babb829fb85e	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	2
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	1
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	a19046ce-9e66-4769-a4a0-30dcf8d629fa	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	1
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	ecd694bc-9b0c-4b38-b0c7-b448fe74c7a3	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	1
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	cad81b48-cc93-4a30-8320-65b5a8dc68da	5b016058-842f-445f-839d-0605af883b49	2020-04-22 11:56:29.808031+00	2020-04-22 11:56:29.808031+00	1
+ea7c374c-310e-4b83-ab94-06170b271168	ca2a288d-b4c5-446b-a8a5-93c1ac919b14	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	215
+ea7c374c-310e-4b83-ab94-06170b271168	ac14fd14-000b-41f0-92e4-a5f9cf0b4c56	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	315
+ea7c374c-310e-4b83-ab94-06170b271168	58098651-8f71-46c2-bacc-db7d173d9ff7	b9dc84f1-d768-48e5-b61d-c387ea43d1e5	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	1
+ea7c374c-310e-4b83-ab94-06170b271168	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	1
+ea7c374c-310e-4b83-ab94-06170b271168	687192e1-e5f8-4873-a497-7d44107e1fee	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	1
+ea7c374c-310e-4b83-ab94-06170b271168	ac2f662e-bda2-4712-8d64-8879913d4f90	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	400
+ea7c374c-310e-4b83-ab94-06170b271168	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	25
+ea7c374c-310e-4b83-ab94-06170b271168	6726ff9c-3d0c-4ca4-93aa-4500892a0e21	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	1
+ea7c374c-310e-4b83-ab94-06170b271168	f874bec8-3c6a-40df-8434-7e853e2630ae	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	220
+ea7c374c-310e-4b83-ab94-06170b271168	c41906ef-750f-440c-9005-3abd1a56ca4c	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	120
+d05b2081-7ad8-417a-ba30-bb9e8171f156	b015a13e-0120-4c52-b0c8-d604e34a88a6	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	30
+d05b2081-7ad8-417a-ba30-bb9e8171f156	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	5
+d05b2081-7ad8-417a-ba30-bb9e8171f156	d5c1d741-86be-405c-973e-424a2208f662	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-17 13:37:58.601035+00	2020-04-17 13:37:58.601035+00	4.5
+ea7c374c-310e-4b83-ab94-06170b271168	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	2
+ea7c374c-310e-4b83-ab94-06170b271168	c0435e91-15d5-4816-bf56-11dabbd9174f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	60
+ea7c374c-310e-4b83-ab94-06170b271168	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	1
+ea7c374c-310e-4b83-ab94-06170b271168	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 12:06:46.295759+00	2020-04-22 12:06:46.295759+00	1
+190433f1-f3c5-4bee-b054-915d3d94df0c	a19046ce-9e66-4769-a4a0-30dcf8d629fa	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	128
+190433f1-f3c5-4bee-b054-915d3d94df0c	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	1
+190433f1-f3c5-4bee-b054-915d3d94df0c	d5c1d741-86be-405c-973e-424a2208f662	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	0.25
+190433f1-f3c5-4bee-b054-915d3d94df0c	a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	3
+190433f1-f3c5-4bee-b054-915d3d94df0c	62e983ae-7ab5-4be7-8393-4b7d7b5e3100	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	2.5
+190433f1-f3c5-4bee-b054-915d3d94df0c	737cec9a-73de-4f7f-b22c-22fc77c37492	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	0.5
+190433f1-f3c5-4bee-b054-915d3d94df0c	17762568-cd7e-437c-b592-2fcad58eb00d	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	3.5
+190433f1-f3c5-4bee-b054-915d3d94df0c	51d7eafd-e7dd-42b2-849a-36701cc9bce4	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	2.5
+190433f1-f3c5-4bee-b054-915d3d94df0c	ac388e5f-eb9a-4f42-86e7-a4f6a056ddea	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	1
+190433f1-f3c5-4bee-b054-915d3d94df0c	d487ca26-f1a0-4483-87ae-5cd5d457bddc	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	2
+190433f1-f3c5-4bee-b054-915d3d94df0c	ba8a2088-4462-4b9f-8217-a38282bed6b3	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	1
+190433f1-f3c5-4bee-b054-915d3d94df0c	6df97308-8578-4785-9a28-ca602f45d00f	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 12:30:37.671092+00	2020-04-22 12:30:37.671092+00	236
+7ce3aa95-6cb4-43be-859d-858eaf915886	ac388e5f-eb9a-4f42-86e7-a4f6a056ddea	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	235
+7ce3aa95-6cb4-43be-859d-858eaf915886	6df97308-8578-4785-9a28-ca602f45d00f	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	235
+7ce3aa95-6cb4-43be-859d-858eaf915886	278573ce-1406-4d45-a02f-e2ccbf23642f	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	1
+7ce3aa95-6cb4-43be-859d-858eaf915886	d5c1d741-86be-405c-973e-424a2208f662	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	2
+7ce3aa95-6cb4-43be-859d-858eaf915886	53d70d11-b899-41c2-8bed-fff1e6bf8e56	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	0.25
+7ce3aa95-6cb4-43be-859d-858eaf915886	a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	1
+7ce3aa95-6cb4-43be-859d-858eaf915886	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	2
+7ce3aa95-6cb4-43be-859d-858eaf915886	2bf73169-bd4d-4a25-a012-9816d82060f1	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	2
+7ce3aa95-6cb4-43be-859d-858eaf915886	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	1
+7ce3aa95-6cb4-43be-859d-858eaf915886	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	1
+7ce3aa95-6cb4-43be-859d-858eaf915886	45717d52-00bd-44c4-bd83-94e89cf13e82	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	0.5
+7ce3aa95-6cb4-43be-859d-858eaf915886	2b66a1e2-3722-4533-946d-5dc4d544d373	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	2
+7ce3aa95-6cb4-43be-859d-858eaf915886	d5d282d2-db82-450d-939e-a8066173b752	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	245
+7ce3aa95-6cb4-43be-859d-858eaf915886	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	25
+7ce3aa95-6cb4-43be-859d-858eaf915886	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	0.5
+7ce3aa95-6cb4-43be-859d-858eaf915886	06b5086d-99c2-4b3e-b5c6-679ca088cdba	5b016058-842f-445f-839d-0605af883b49	2020-04-22 12:47:09.774687+00	2020-04-22 12:47:09.774687+00	8
+045e6509-2b94-4d0a-aefd-9a320fc8a790	a19046ce-9e66-4769-a4a0-30dcf8d629fa	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	500
+045e6509-2b94-4d0a-aefd-9a320fc8a790	6df97308-8578-4785-9a28-ca602f45d00f	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	280
+045e6509-2b94-4d0a-aefd-9a320fc8a790	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	40
+045e6509-2b94-4d0a-aefd-9a320fc8a790	d5c1d741-86be-405c-973e-424a2208f662	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	1
+045e6509-2b94-4d0a-aefd-9a320fc8a790	614243d3-5248-413e-8e36-c8e81fd8fc5c	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	250
+045e6509-2b94-4d0a-aefd-9a320fc8a790	782c6485-06d4-43e2-a818-a9ff92532223	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	250
+045e6509-2b94-4d0a-aefd-9a320fc8a790	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	1
+045e6509-2b94-4d0a-aefd-9a320fc8a790	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	3
+045e6509-2b94-4d0a-aefd-9a320fc8a790	6af093e4-9b75-4270-84f6-53264b632137	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	300
+045e6509-2b94-4d0a-aefd-9a320fc8a790	73cdbb23-5507-4455-9e7e-8d465b929588	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 13:56:58.399349+00	2020-04-22 13:56:58.399349+00	1
+82595eba-6f0a-4d50-99fd-f5a346ca5783	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	1
+82595eba-6f0a-4d50-99fd-f5a346ca5783	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	2
+82595eba-6f0a-4d50-99fd-f5a346ca5783	28766e18-3a39-4ee6-a6e2-a8e340847ea0	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	1
+82595eba-6f0a-4d50-99fd-f5a346ca5783	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	400
+82595eba-6f0a-4d50-99fd-f5a346ca5783	58098651-8f71-46c2-bacc-db7d173d9ff7	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	500
+82595eba-6f0a-4d50-99fd-f5a346ca5783	614243d3-5248-413e-8e36-c8e81fd8fc5c	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	400
+82595eba-6f0a-4d50-99fd-f5a346ca5783	a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	0.5
+82595eba-6f0a-4d50-99fd-f5a346ca5783	d487ca26-f1a0-4483-87ae-5cd5d457bddc	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	2
+82595eba-6f0a-4d50-99fd-f5a346ca5783	687192e1-e5f8-4873-a497-7d44107e1fee	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	1.5
+82595eba-6f0a-4d50-99fd-f5a346ca5783	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	1.5
+82595eba-6f0a-4d50-99fd-f5a346ca5783	0b8a3804-66c4-48ea-a333-059b3bc6d6f4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	0.25
+82595eba-6f0a-4d50-99fd-f5a346ca5783	2bf73169-bd4d-4a25-a012-9816d82060f1	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	0.25
+82595eba-6f0a-4d50-99fd-f5a346ca5783	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:03:21.445104+00	2020-04-22 14:03:21.445104+00	1
+82595eba-6f0a-4d50-99fd-f5a346ca5783	8fbe8288-022f-481e-abec-998afea2a6c0	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:05:17.277758+00	2020-04-22 14:05:17.277758+00	150
+82595eba-6f0a-4d50-99fd-f5a346ca5783	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:05:17.277758+00	2020-04-22 14:05:17.277758+00	1
+82595eba-6f0a-4d50-99fd-f5a346ca5783	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 14:11:29.060276+00	2020-04-22 14:11:29.060276+00	1
+82595eba-6f0a-4d50-99fd-f5a346ca5783	8de987e8-afcc-4c1a-9fcc-c5931a614829	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:12:10.589141+00	2020-04-22 14:12:10.589141+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	d3b58f01-5da3-4a23-b0f0-5804b09e3995	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	6726ff9c-3d0c-4ca4-93aa-4500892a0e21	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	0.5
+540387b3-4e29-47d4-b968-3f10a3354a5f	2b66a1e2-3722-4533-946d-5dc4d544d373	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	0.5
+540387b3-4e29-47d4-b968-3f10a3354a5f	657bf6f2-99f8-4afa-8656-1370634b529f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	200
+540387b3-4e29-47d4-b968-3f10a3354a5f	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	34cb469d-415c-4721-9849-dd9a217bd7ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	d5c1d741-86be-405c-973e-424a2208f662	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	45717d52-00bd-44c4-bd83-94e89cf13e82	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+540387b3-4e29-47d4-b968-3f10a3354a5f	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:17:47.721744+00	2020-04-22 14:17:47.721744+00	1
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	ac388e5f-eb9a-4f42-86e7-a4f6a056ddea	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:22:06.647796+00	2020-04-22 14:22:06.647796+00	1
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:22:06.647796+00	2020-04-22 14:22:06.647796+00	1
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:22:06.647796+00	2020-04-22 14:22:06.647796+00	1
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:22:06.647796+00	2020-04-22 14:22:06.647796+00	1
+88921e1a-def8-455f-8b19-2e89a40de8a4	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	400
+88921e1a-def8-455f-8b19-2e89a40de8a4	34cb469d-415c-4721-9849-dd9a217bd7ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	1
+88921e1a-def8-455f-8b19-2e89a40de8a4	6726ff9c-3d0c-4ca4-93aa-4500892a0e21	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	1
+88921e1a-def8-455f-8b19-2e89a40de8a4	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	2
+88921e1a-def8-455f-8b19-2e89a40de8a4	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	1
+88921e1a-def8-455f-8b19-2e89a40de8a4	06b5086d-99c2-4b3e-b5c6-679ca088cdba	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	4
+88921e1a-def8-455f-8b19-2e89a40de8a4	0b595038-508a-45db-98b8-0b9372095627	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	150
+88921e1a-def8-455f-8b19-2e89a40de8a4	2ece47a3-71e0-412d-88ef-80fe7924c429	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	110
+88921e1a-def8-455f-8b19-2e89a40de8a4	6af093e4-9b75-4270-84f6-53264b632137	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	200
+88921e1a-def8-455f-8b19-2e89a40de8a4	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	1
+88921e1a-def8-455f-8b19-2e89a40de8a4	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:28:58.045967+00	2020-04-22 14:28:58.045967+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	d3b58f01-5da3-4a23-b0f0-5804b09e3995	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:34:30.312037+00	2020-04-22 14:34:30.312037+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:34:30.312037+00	2020-04-22 14:34:30.312037+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:34:30.312037+00	2020-04-22 14:34:30.312037+00	5
+7c732541-41eb-4e13-98d2-968afadedec8	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:34:30.312037+00	2020-04-22 14:34:30.312037+00	0.5
+7c732541-41eb-4e13-98d2-968afadedec8	c0435e91-15d5-4816-bf56-11dabbd9174f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:34:30.312037+00	2020-04-22 14:34:30.312037+00	150
+7c732541-41eb-4e13-98d2-968afadedec8	2b66a1e2-3722-4533-946d-5dc4d544d373	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:34:30.312037+00	2020-04-22 14:34:30.312037+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:34:30.312037+00	2020-04-22 14:34:30.312037+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	06b5086d-99c2-4b3e-b5c6-679ca088cdba	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	4
+7c732541-41eb-4e13-98d2-968afadedec8	fc4da1a7-9bbe-4b4d-a3c1-0d971fd7dd0b	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	5
+7c732541-41eb-4e13-98d2-968afadedec8	677b7045-44fd-4a05-992c-552591f42457	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	40
+7c732541-41eb-4e13-98d2-968afadedec8	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	0.5
+7c732541-41eb-4e13-98d2-968afadedec8	a8120ffe-0648-4671-bd26-772b8dacb21f	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	0.5
+7c732541-41eb-4e13-98d2-968afadedec8	6f7c50aa-2179-4b51-9c17-d490d8d8fe24	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	0.5
+7c732541-41eb-4e13-98d2-968afadedec8	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	e4ff0a36-3db1-42fb-b8dd-002df663e5a2	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:38:09.750376+00	2020-04-22 14:38:09.750376+00	5
+7c732541-41eb-4e13-98d2-968afadedec8	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:39:15.073701+00	2020-04-22 14:39:15.073701+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:39:15.073701+00	2020-04-22 14:39:15.073701+00	1
+7c732541-41eb-4e13-98d2-968afadedec8	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:39:15.073701+00	2020-04-22 14:39:15.073701+00	1
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	d3b58f01-5da3-4a23-b0f0-5804b09e3995	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:44:39.420385+00	2020-04-22 14:44:39.420385+00	1
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:44:39.420385+00	2020-04-22 14:44:39.420385+00	1
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	0cae4bc8-72d6-40d1-86ec-dc381de9bc61	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:44:39.420385+00	2020-04-22 14:44:39.420385+00	100
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	b3701ae4-f6f7-43b2-87a4-8ff32788c86b	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:44:39.420385+00	2020-04-22 14:44:39.420385+00	250
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	776e873a-3cba-490f-aa33-7820667c3997	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:44:39.420385+00	2020-04-22 14:44:39.420385+00	20
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 14:44:39.420385+00	2020-04-22 14:44:39.420385+00	0.5
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	614243d3-5248-413e-8e36-c8e81fd8fc5c	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:44:39.420385+00	2020-04-22 14:44:39.420385+00	2
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:46:20.55391+00	2020-04-22 14:46:20.55391+00	1
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	67565f55-5acc-4ae4-8cb2-efff35a3075a	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:46:20.55391+00	2020-04-22 14:46:20.55391+00	1
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	58098651-8f71-46c2-bacc-db7d173d9ff7	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:46:20.55391+00	2020-04-22 14:46:20.55391+00	200
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:46:20.55391+00	2020-04-22 14:46:20.55391+00	1
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:46:20.55391+00	2020-04-22 14:46:20.55391+00	1
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:46:20.55391+00	2020-04-22 14:46:20.55391+00	1
+535234f4-58b5-4890-9c5f-4a985db7795e	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	1
+535234f4-58b5-4890-9c5f-4a985db7795e	34cb469d-415c-4721-9849-dd9a217bd7ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	0.5
+535234f4-58b5-4890-9c5f-4a985db7795e	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	0.5
+535234f4-58b5-4890-9c5f-4a985db7795e	36af3356-aa3e-4665-8ebd-146d80c321ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	2
+535234f4-58b5-4890-9c5f-4a985db7795e	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	2
+535234f4-58b5-4890-9c5f-4a985db7795e	0761e4ba-8a2d-4d1d-9986-5b5334984585	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	2
+535234f4-58b5-4890-9c5f-4a985db7795e	62783a87-b1bc-4248-960f-2b67ad5a5396	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	100
+535234f4-58b5-4890-9c5f-4a985db7795e	2b9b770b-b888-4f36-a0f9-3a4d4f65270e	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	45
+535234f4-58b5-4890-9c5f-4a985db7795e	feb70ace-966f-4792-ae8a-167e49f7b854	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	30
+535234f4-58b5-4890-9c5f-4a985db7795e	58098651-8f71-46c2-bacc-db7d173d9ff7	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	500
+535234f4-58b5-4890-9c5f-4a985db7795e	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	1
+535234f4-58b5-4890-9c5f-4a985db7795e	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	1
+535234f4-58b5-4890-9c5f-4a985db7795e	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:51:11.094859+00	2020-04-22 14:51:11.094859+00	1
+55930764-1d55-4d28-9c03-4e27edf35c97	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	1
+55930764-1d55-4d28-9c03-4e27edf35c97	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	1
+55930764-1d55-4d28-9c03-4e27edf35c97	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	1
+55930764-1d55-4d28-9c03-4e27edf35c97	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	1
+55930764-1d55-4d28-9c03-4e27edf35c97	6df97308-8578-4785-9a28-ca602f45d00f	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	50
+55930764-1d55-4d28-9c03-4e27edf35c97	614243d3-5248-413e-8e36-c8e81fd8fc5c	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	400
+55930764-1d55-4d28-9c03-4e27edf35c97	a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	1
+55930764-1d55-4d28-9c03-4e27edf35c97	d44e2ada-2a86-4808-89f8-babb829fb85e	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	5
+55930764-1d55-4d28-9c03-4e27edf35c97	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	0.5
+55930764-1d55-4d28-9c03-4e27edf35c97	0bc7b491-a23d-44f0-94ff-5fb04df3d298	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	50
+55930764-1d55-4d28-9c03-4e27edf35c97	2ece47a3-71e0-412d-88ef-80fe7924c429	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	50
+55930764-1d55-4d28-9c03-4e27edf35c97	6af093e4-9b75-4270-84f6-53264b632137	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	75
+55930764-1d55-4d28-9c03-4e27edf35c97	405f8af2-d2a2-479d-a345-01d4c4a26bb2	5b016058-842f-445f-839d-0605af883b49	2020-04-22 14:56:12.166121+00	2020-04-22 14:56:12.166121+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	e3a6c0d8-f461-40ac-9179-15e91578eef2	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	20
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	75443b33-3a02-465b-a8f2-5cb88c0c3362	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	0.25
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	3a50e56d-1bd8-4003-beff-38466417e72a	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	200
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	f874bec8-3c6a-40df-8434-7e853e2630ae	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	50
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	0.5
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	1
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	58098651-8f71-46c2-bacc-db7d173d9ff7	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 15:02:04.031598+00	2020-04-22 15:02:04.031598+00	800
+58ae77ce-46f5-4cb4-b1b8-65485579533c	7ce9c46e-3b9a-492f-8571-6bc9423dceae	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	400
+58ae77ce-46f5-4cb4-b1b8-65485579533c	99a127f6-986d-4068-bab2-d2a25d514f15	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	100
+58ae77ce-46f5-4cb4-b1b8-65485579533c	6f8adb2d-11ed-44b7-b409-85be16c187ac	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	4
+58ae77ce-46f5-4cb4-b1b8-65485579533c	55ceff1c-d7ab-411b-96a8-e73a617a43be	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	50
+58ae77ce-46f5-4cb4-b1b8-65485579533c	6af093e4-9b75-4270-84f6-53264b632137	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	150
+58ae77ce-46f5-4cb4-b1b8-65485579533c	278573ce-1406-4d45-a02f-e2ccbf23642f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	150
+58ae77ce-46f5-4cb4-b1b8-65485579533c	9770ed14-9b8c-47a0-97a1-f9d80b59d8ee	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	20
+58ae77ce-46f5-4cb4-b1b8-65485579533c	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	60
+58ae77ce-46f5-4cb4-b1b8-65485579533c	9d8d121c-4901-46d6-90a6-c38bf33419f4	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	2
+58ae77ce-46f5-4cb4-b1b8-65485579533c	b5c2021c-fba8-4ce0-aa95-7c09e626a0aa	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	50
+58ae77ce-46f5-4cb4-b1b8-65485579533c	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	0.5
+58ae77ce-46f5-4cb4-b1b8-65485579533c	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	1
+58ae77ce-46f5-4cb4-b1b8-65485579533c	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 15:39:36.9839+00	2020-04-22 15:39:36.9839+00	1
+385aaaea-d972-48cc-b873-772ada74c644	074389cb-8204-4558-a0b3-13150c025d7d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	08081ae7-51e8-4f66-a6f6-1281dd2bcfdb	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	150
+385aaaea-d972-48cc-b873-772ada74c644	e99e29f6-b34b-4d6a-8abf-49d22b9ea8ba	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	50
+385aaaea-d972-48cc-b873-772ada74c644	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	c0435e91-15d5-4816-bf56-11dabbd9174f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	150
+385aaaea-d972-48cc-b873-772ada74c644	f61c7096-ad2e-41fb-b821-d57bc5766d5c	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	6726ff9c-3d0c-4ca4-93aa-4500892a0e21	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	d487ca26-f1a0-4483-87ae-5cd5d457bddc	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	70
+385aaaea-d972-48cc-b873-772ada74c644	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+385aaaea-d972-48cc-b873-772ada74c644	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 15:46:06.013063+00	2020-04-22 15:46:06.013063+00	1
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	2
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	6726ff9c-3d0c-4ca4-93aa-4500892a0e21	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	1
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	384cc94e-5808-4ef6-bfe4-a75e07628370	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	300
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	2
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	1
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	3
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	3a50e56d-1bd8-4003-beff-38466417e72a	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	225
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	f16f46ef-1fe0-4a95-bdc9-45d83635f92a	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	1
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	474d1027-20b6-415a-bd88-d9266910a495	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	1
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:50:49.110845+00	2020-04-22 15:50:49.110845+00	400
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	58098651-8f71-46c2-bacc-db7d173d9ff7	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 15:52:32.53679+00	2020-04-22 15:52:32.53679+00	250
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	f874bec8-3c6a-40df-8434-7e853e2630ae	5b016058-842f-445f-839d-0605af883b49	2020-04-22 15:52:32.53679+00	2020-04-22 15:52:32.53679+00	6
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	e3a6c0d8-f461-40ac-9179-15e91578eef2	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:52:32.53679+00	2020-04-22 15:52:32.53679+00	20
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 15:52:32.53679+00	2020-04-22 15:52:32.53679+00	1
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 15:52:32.53679+00	2020-04-22 15:52:32.53679+00	1
+d05b2081-7ad8-417a-ba30-bb9e8171f156	6f7c50aa-2179-4b51-9c17-d490d8d8fe24	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:59:36.582791+00	2020-04-22 15:59:36.582791+00	2
+d05b2081-7ad8-417a-ba30-bb9e8171f156	e5e5f8fb-1791-48d3-9f21-33fe3aa23c02	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:59:36.582791+00	2020-04-22 15:59:36.582791+00	2
+d05b2081-7ad8-417a-ba30-bb9e8171f156	8dbfae0c-5181-43cb-97ae-eec4614ab3eb	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:59:36.582791+00	2020-04-22 15:59:36.582791+00	2
+d05b2081-7ad8-417a-ba30-bb9e8171f156	4a1408de-9e4b-4543-b263-c3b13d9e2b6a	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:59:36.582791+00	2020-04-22 15:59:36.582791+00	2
+d05b2081-7ad8-417a-ba30-bb9e8171f156	45717d52-00bd-44c4-bd83-94e89cf13e82	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 15:59:36.582791+00	2020-04-22 15:59:36.582791+00	1
+d05b2081-7ad8-417a-ba30-bb9e8171f156	a19046ce-9e66-4769-a4a0-30dcf8d629fa	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:15:45.208106+00	2020-04-22 16:15:45.208106+00	24
+d05b2081-7ad8-417a-ba30-bb9e8171f156	58098651-8f71-46c2-bacc-db7d173d9ff7	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 16:15:45.208106+00	2020-04-22 16:15:45.208106+00	250
+d05b2081-7ad8-417a-ba30-bb9e8171f156	b5c2021c-fba8-4ce0-aa95-7c09e626a0aa	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 16:15:45.208106+00	2020-04-22 16:15:45.208106+00	250
+d05b2081-7ad8-417a-ba30-bb9e8171f156	1c5ffd9b-4ef2-4cc7-96b4-8ed29827a2a1	691f3763-8262-45a6-8188-f9c2d6a32d34	2020-04-22 16:15:45.208106+00	2020-04-22 16:15:45.208106+00	12
+d05b2081-7ad8-417a-ba30-bb9e8171f156	e3a6c0d8-f461-40ac-9179-15e91578eef2	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:15:45.208106+00	2020-04-22 16:15:45.208106+00	115
+24a8af08-7f72-4a80-8510-12b9d90535f1	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	2
+24a8af08-7f72-4a80-8510-12b9d90535f1	737cec9a-73de-4f7f-b22c-22fc77c37492	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	2
+24a8af08-7f72-4a80-8510-12b9d90535f1	36af3356-aa3e-4665-8ebd-146d80c321ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	58098651-8f71-46c2-bacc-db7d173d9ff7	b9dc84f1-d768-48e5-b61d-c387ea43d1e5	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	ac14fd14-000b-41f0-92e4-a5f9cf0b4c56	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	450
+24a8af08-7f72-4a80-8510-12b9d90535f1	8de987e8-afcc-4c1a-9fcc-c5931a614829	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	097657ed-7f01-4632-a54c-79504e8c819f	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	0b8a3804-66c4-48ea-a333-059b3bc6d6f4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	55ceff1c-d7ab-411b-96a8-e73a617a43be	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	80
+24a8af08-7f72-4a80-8510-12b9d90535f1	51d7eafd-e7dd-42b2-849a-36701cc9bce4	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	1de6d0ea-d9e9-40dd-88c6-5ee0d5941df6	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	2
+24a8af08-7f72-4a80-8510-12b9d90535f1	d3b58f01-5da3-4a23-b0f0-5804b09e3995	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	2
+24a8af08-7f72-4a80-8510-12b9d90535f1	f3d99221-5cc0-42a9-8ade-4343a3f38719	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	100
+24a8af08-7f72-4a80-8510-12b9d90535f1	38b8065d-9d19-41ee-9965-3722b1d83a8b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	180
+24a8af08-7f72-4a80-8510-12b9d90535f1	cad81b48-cc93-4a30-8320-65b5a8dc68da	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+24a8af08-7f72-4a80-8510-12b9d90535f1	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:24:08.118638+00	2020-04-22 16:24:08.118638+00	1
+f6c686e3-931b-4775-b455-1c8656066cb7	614243d3-5248-413e-8e36-c8e81fd8fc5c	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	450
+f6c686e3-931b-4775-b455-1c8656066cb7	ac2f662e-bda2-4712-8d64-8879913d4f90	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	400
+f6c686e3-931b-4775-b455-1c8656066cb7	b015a13e-0120-4c52-b0c8-d604e34a88a6	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	4
+f6c686e3-931b-4775-b455-1c8656066cb7	ba8a2088-4462-4b9f-8217-a38282bed6b3	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	1
+f6c686e3-931b-4775-b455-1c8656066cb7	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	2
+f6c686e3-931b-4775-b455-1c8656066cb7	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	0.5
+f6c686e3-931b-4775-b455-1c8656066cb7	0b8a3804-66c4-48ea-a333-059b3bc6d6f4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	1
+f6c686e3-931b-4775-b455-1c8656066cb7	a8120ffe-0648-4671-bd26-772b8dacb21f	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:29:11.466014+00	2020-04-22 16:29:11.466014+00	0.25
+f6c686e3-931b-4775-b455-1c8656066cb7	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:30:52.174049+00	2020-04-22 16:30:52.174049+00	2
+f6c686e3-931b-4775-b455-1c8656066cb7	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:30:52.174049+00	2020-04-22 16:30:52.174049+00	2
+f6c686e3-931b-4775-b455-1c8656066cb7	c0435e91-15d5-4816-bf56-11dabbd9174f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:30:52.174049+00	2020-04-22 16:30:52.174049+00	50
+f6c686e3-931b-4775-b455-1c8656066cb7	384cc94e-5808-4ef6-bfe4-a75e07628370	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:30:52.174049+00	2020-04-22 16:30:52.174049+00	200
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	0cae4bc8-72d6-40d1-86ec-dc381de9bc61	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	160
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	614243d3-5248-413e-8e36-c8e81fd8fc5c	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	650
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	b015a13e-0120-4c52-b0c8-d604e34a88a6	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	1
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	2
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	2
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	6e9a76cc-93a3-49d2-a51a-00f897e0ca27	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	1
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	6f7c50aa-2179-4b51-9c17-d490d8d8fe24	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	0.5
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	9e68660c-748e-4163-8a2b-14f685897ebe	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	0.5
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	d487ca26-f1a0-4483-87ae-5cd5d457bddc	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	1
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	400
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	58098651-8f71-46c2-bacc-db7d173d9ff7	b9dc84f1-d768-48e5-b61d-c387ea43d1e5	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	1
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	26e9ec81-1a6f-41c9-83b1-9a142692b061	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	2
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	d5c1d741-86be-405c-973e-424a2208f662	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	0.5
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	50941912-d671-4929-9e95-649d1bc44c99	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	250
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	2ece47a3-71e0-412d-88ef-80fe7924c429	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	50
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:37:40.077165+00	2020-04-22 16:37:40.077165+00	1
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	b3701ae4-f6f7-43b2-87a4-8ff32788c86b	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	150
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	09333b91-b223-4bc2-b32c-f33f7bf75d15	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	3
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	51d7eafd-e7dd-42b2-849a-36701cc9bce4	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	2
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2b9b770b-b888-4f36-a0f9-3a4d4f65270e	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	3
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	62e983ae-7ab5-4be7-8393-4b7d7b5e3100	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	1
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	36af3356-aa3e-4665-8ebd-146d80c321ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	1
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	2
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	67565f55-5acc-4ae4-8cb2-efff35a3075a	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	2
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	b8e8dbe9-a9f0-4f26-81c5-16609c32dc66	691f3763-8262-45a6-8188-f9c2d6a32d34	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	5
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	3fb3c62a-4d3d-404b-8862-c4f33eaa0467	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	1
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	3e51ac48-e84a-4efc-acb2-bf90221ed6af	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	50
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	787a2eb8-1a18-4c12-94a2-2b437c70098d	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	50
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	0b40e44f-2f9b-4c9c-b083-9a2aecb92ae7	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	300
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	737cec9a-73de-4f7f-b22c-22fc77c37492	537c63ca-883d-4f2f-a12a-9bc033d79675	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	8
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	2
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	34cb469d-415c-4721-9849-dd9a217bd7ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	2
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	474d1027-20b6-415a-bd88-d9266910a495	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	1
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	feb70ace-966f-4792-ae8a-167e49f7b854	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	1
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	3
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	1
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:45:32.704068+00	2020-04-22 16:45:32.704068+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	e0758d3b-9a52-4d69-87a8-b334b00fc7ca	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	140
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	a15506fa-6068-4796-8ce9-31b5bd013773	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	140
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	25
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	55ceff1c-d7ab-411b-96a8-e73a617a43be	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	25
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	b5c2021c-fba8-4ce0-aa95-7c09e626a0aa	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	300
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	987dd641-a348-4691-a2c3-62103c8fec9f	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	2ece47a3-71e0-412d-88ef-80fe7924c429	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	70
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	ba8a2088-4462-4b9f-8217-a38282bed6b3	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	af38b9f4-78e1-4002-8200-96878caf3efd	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	2126cfb2-6868-4c7c-acc1-f534d8ad3572	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:50:10.312113+00	2020-04-22 16:50:10.312113+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	0bc7b491-a23d-44f0-94ff-5fb04df3d298	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:51:37.648084+00	2020-04-22 16:51:37.648084+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:51:37.648084+00	2020-04-22 16:51:37.648084+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 16:51:37.648084+00	2020-04-22 16:51:37.648084+00	1
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	9b9ba441-79db-4b5f-8f19-bc25b3f4d1f7	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 16:52:02.505577+00	2020-04-22 16:52:02.505577+00	1
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	7ce9c46e-3b9a-492f-8571-6bc9423dceae	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	400
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	94447a68-6570-4b82-8e66-013ab2116629	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	0.5
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	0.5
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	3
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	cad81b48-cc93-4a30-8320-65b5a8dc68da	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	1
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	2bf73169-bd4d-4a25-a012-9816d82060f1	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	1
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	1
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	ba8a2088-4462-4b9f-8217-a38282bed6b3	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	1
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	0bc7b491-a23d-44f0-94ff-5fb04df3d298	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	40
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	2
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	677b7045-44fd-4a05-992c-552591f42457	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	40
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	71791579-2b8c-41e0-971c-f2ea3c1dcfb6	5b016058-842f-445f-839d-0605af883b49	2020-04-22 16:57:24.68407+00	2020-04-22 16:57:24.68407+00	4
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	2
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	98d6f6ee-6f4e-4b42-a8b6-05ecd111cae7	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	1
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	1
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	a15506fa-6068-4796-8ce9-31b5bd013773	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	175
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	88
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	912d66c6-3353-4b5b-adf9-ce04c3e3a0df	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	25
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	6df97308-8578-4785-9a28-ca602f45d00f	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	3
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	36af3356-aa3e-4665-8ebd-146d80c321ee	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	25
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	0.5
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	51d7eafd-e7dd-42b2-849a-36701cc9bce4	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	2
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	f7f9a233-bc0d-46e4-b8d2-dfbc7826c44a	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:03:10.989356+00	2020-04-22 17:03:10.989356+00	1
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2126cfb2-6868-4c7c-acc1-f534d8ad3572	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:06:35.348199+00	2020-04-22 17:06:35.348199+00	1
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	d6947cf4-58ed-4bd0-aaad-4fd576268204	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:06:35.348199+00	2020-04-22 17:06:35.348199+00	1
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	0706b53a-af96-4a67-bd7e-e8e6d1d79384	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:06:35.348199+00	2020-04-22 17:06:35.348199+00	2
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	38b8065d-9d19-41ee-9965-3722b1d83a8b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:06:35.348199+00	2020-04-22 17:06:35.348199+00	300
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:10:22.416286+00	2020-04-22 17:10:22.416286+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:10:22.416286+00	2020-04-22 17:10:22.416286+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	a55bb05a-2c89-4c54-b6cf-1877ba3da3d5	8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	2020-04-22 17:10:22.416286+00	2020-04-22 17:10:22.416286+00	0.5
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	62783a87-b1bc-4248-960f-2b67ad5a5396	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:10:22.416286+00	2020-04-22 17:10:22.416286+00	230
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:10:22.416286+00	2020-04-22 17:10:22.416286+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	8de987e8-afcc-4c1a-9fcc-c5931a614829	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:10:22.416286+00	2020-04-22 17:10:22.416286+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	d487ca26-f1a0-4483-87ae-5cd5d457bddc	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:10:22.416286+00	2020-04-22 17:10:22.416286+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	400
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	0cae4bc8-72d6-40d1-86ec-dc381de9bc61	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	100
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	58098651-8f71-46c2-bacc-db7d173d9ff7	b9dc84f1-d768-48e5-b61d-c387ea43d1e5	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	d5d282d2-db82-450d-939e-a8066173b752	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	100
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	ac14fd14-000b-41f0-92e4-a5f9cf0b4c56	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	200
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	1
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	79fa5df5-5a82-402f-85a1-9dc78e1dbe63	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:12:57.073232+00	2020-04-22 17:12:57.073232+00	1
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	26e9ec81-1a6f-41c9-83b1-9a142692b061	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	2
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	f3d99221-5cc0-42a9-8ade-4343a3f38719	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	135
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	cad81b48-cc93-4a30-8320-65b5a8dc68da	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	2
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	1
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	6f7c50aa-2179-4b51-9c17-d490d8d8fe24	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	1.5
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	4a1408de-9e4b-4543-b263-c3b13d9e2b6a	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	1
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	e5e5f8fb-1791-48d3-9f21-33fe3aa23c02	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	0.5
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	8dbfae0c-5181-43cb-97ae-eec4614ab3eb	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	0.5
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	faa117d8-38ed-472b-bbd1-00a0b919766f	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	0.5
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	c822cd47-2fb1-4a08-a8aa-a96a0f5d0df5	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:17:57.094077+00	2020-04-22 17:17:57.094077+00	1
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	474d1027-20b6-415a-bd88-d9266910a495	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	1
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	e3a6c0d8-f461-40ac-9179-15e91578eef2	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	65
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	0b595038-508a-45db-98b8-0b9372095627	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	450
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	400
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	2
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	1
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	d487ca26-f1a0-4483-87ae-5cd5d457bddc	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	1
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	f16f46ef-1fe0-4a95-bdc9-45d83635f92a	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	0.5
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	278573ce-1406-4d45-a02f-e2ccbf23642f	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 17:21:43.047484+00	2020-04-22 17:21:43.047484+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	ac2f662e-bda2-4712-8d64-8879913d4f90	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	400
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	b3701ae4-f6f7-43b2-87a4-8ff32788c86b	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	3
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	d11c609f-ce7f-45b0-a08c-43c5ab2f0bad	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2b9b770b-b888-4f36-a0f9-3a4d4f65270e	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	40cf7010-831d-47c3-9479-ec5b47397bbe	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	987dd641-a348-4691-a2c3-62103c8fec9f	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	28766e18-3a39-4ee6-a6e2-a8e340847ea0	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	0.25
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	2
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	f7f9a233-bc0d-46e4-b8d2-dfbc7826c44a	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	2
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	b015a13e-0120-4c52-b0c8-d604e34a88a6	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	51d7eafd-e7dd-42b2-849a-36701cc9bce4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	feb70ace-966f-4792-ae8a-167e49f7b854	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	45717d52-00bd-44c4-bd83-94e89cf13e82	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 17:28:00.338712+00	2020-04-22 17:28:00.338712+00	1
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	b4f319d9-c25d-4dec-8991-0709a529d593	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	6
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	26e9ec81-1a6f-41c9-83b1-9a142692b061	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	1
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	1
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	1
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	2
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	474d1027-20b6-415a-bd88-d9266910a495	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	10
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2ece47a3-71e0-412d-88ef-80fe7924c429	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	40
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	e3a6c0d8-f461-40ac-9179-15e91578eef2	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	35
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	d487ca26-f1a0-4483-87ae-5cd5d457bddc	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	1
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:33:11.876436+00	2020-04-22 17:33:11.876436+00	400
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	62e983ae-7ab5-4be7-8393-4b7d7b5e3100	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	1
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	6726ff9c-3d0c-4ca4-93aa-4500892a0e21	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	1
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	1
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	737cec9a-73de-4f7f-b22c-22fc77c37492	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	2
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	34cb469d-415c-4721-9849-dd9a217bd7ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	1
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	0b8a3804-66c4-48ea-a333-059b3bc6d6f4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	1.5
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	1.5
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	d3b58f01-5da3-4a23-b0f0-5804b09e3995	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	2
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	0cae4bc8-72d6-40d1-86ec-dc381de9bc61	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	250
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	58098651-8f71-46c2-bacc-db7d173d9ff7	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	600
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	b35bdf2f-4c7d-4f58-a788-fb711a0398e6	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	80
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	67565f55-5acc-4ae4-8cb2-efff35a3075a	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	4
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	474d1027-20b6-415a-bd88-d9266910a495	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:36:48.108689+00	2020-04-22 17:36:48.108689+00	1
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	2
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	1
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	d5c1d741-86be-405c-973e-424a2208f662	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	2
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	0.5
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	a8120ffe-0648-4671-bd26-772b8dacb21f	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	0.5
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	b138947c-9cf1-4b45-abc9-9134b87b4ef2	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	2
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	d3b58f01-5da3-4a23-b0f0-5804b09e3995	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	1
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	06b5086d-99c2-4b3e-b5c6-679ca088cdba	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	8
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	2
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	1
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	1
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	d5d282d2-db82-450d-939e-a8066173b752	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 17:42:01.878937+00	2020-04-22 17:42:01.878937+00	237
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	11
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	2
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	2
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	34cb469d-415c-4721-9849-dd9a217bd7ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	0.5
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2b66a1e2-3722-4533-946d-5dc4d544d373	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	2
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	2
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	7482bc6e-4df9-46fb-972d-013be1bccddc	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	1
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	06b5086d-99c2-4b3e-b5c6-679ca088cdba	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	4
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	2
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:46:24.745657+00	2020-04-22 17:46:24.745657+00	1
+3854e245-9420-45bf-8c1b-ae5034132673	b4f319d9-c25d-4dec-8991-0709a529d593	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	8
+3854e245-9420-45bf-8c1b-ae5034132673	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	0.5
+3854e245-9420-45bf-8c1b-ae5034132673	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	5
+3854e245-9420-45bf-8c1b-ae5034132673	b015a13e-0120-4c52-b0c8-d604e34a88a6	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	4
+3854e245-9420-45bf-8c1b-ae5034132673	b35bdf2f-4c7d-4f58-a788-fb711a0398e6	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	170
+3854e245-9420-45bf-8c1b-ae5034132673	0b595038-508a-45db-98b8-0b9372095627	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	112
+3854e245-9420-45bf-8c1b-ae5034132673	50941912-d671-4929-9e95-649d1bc44c99	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	125
+3854e245-9420-45bf-8c1b-ae5034132673	474d1027-20b6-415a-bd88-d9266910a495	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	1
+3854e245-9420-45bf-8c1b-ae5034132673	d5c1d741-86be-405c-973e-424a2208f662	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	0.75
+3854e245-9420-45bf-8c1b-ae5034132673	2126cfb2-6868-4c7c-acc1-f534d8ad3572	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	0.5
+3854e245-9420-45bf-8c1b-ae5034132673	513c08fc-18c2-44f5-94f8-dffdd456bd90	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	1
+3854e245-9420-45bf-8c1b-ae5034132673	45717d52-00bd-44c4-bd83-94e89cf13e82	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	0.25
+3854e245-9420-45bf-8c1b-ae5034132673	2c010390-1652-4b0d-9277-630c1589548f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	400
+3854e245-9420-45bf-8c1b-ae5034132673	561a1085-d277-4418-b7c1-58a2d983a50d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:54:26.505657+00	2020-04-22 17:54:26.505657+00	0.5
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	614243d3-5248-413e-8e36-c8e81fd8fc5c	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	625
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	55
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	c4e25e7f-c3cf-4d09-9594-abdc8f1c33a8	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	1
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	0.5
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	737cec9a-73de-4f7f-b22c-22fc77c37492	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	1
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	34cb469d-415c-4721-9849-dd9a217bd7ee	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	1
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	b35bdf2f-4c7d-4f58-a788-fb711a0398e6	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	200
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	6cbc3f97-40bf-46e8-a66f-3f603457b262	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	1.5
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	2
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	1
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	5283e6f7-b700-4594-bf28-07ee22382c7d	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 17:59:04.11341+00	2020-04-22 17:59:04.11341+00	135
+6b1b89d5-54aa-4e5d-801c-893060d9ca7e	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:04:37.757475+00	2020-04-22 18:04:37.757475+00	115
+6b1b89d5-54aa-4e5d-801c-893060d9ca7e	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:04:37.757475+00	2020-04-22 18:04:37.757475+00	3
+6b1b89d5-54aa-4e5d-801c-893060d9ca7e	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 18:04:37.757475+00	2020-04-22 18:04:37.757475+00	1
+6b1b89d5-54aa-4e5d-801c-893060d9ca7e	08081ae7-51e8-4f66-a6f6-1281dd2bcfdb	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:04:37.757475+00	2020-04-22 18:04:37.757475+00	225
+6b1b89d5-54aa-4e5d-801c-893060d9ca7e	55ceff1c-d7ab-411b-96a8-e73a617a43be	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:04:37.757475+00	2020-04-22 18:04:37.757475+00	142
+6b1b89d5-54aa-4e5d-801c-893060d9ca7e	6f8adb2d-11ed-44b7-b409-85be16c187ac	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 18:04:37.757475+00	2020-04-22 18:04:37.757475+00	2
+48cf280e-9329-4c39-a7de-b49350de47b5	43a6f028-3d25-47ec-975b-1b5e41dfda19	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	300
+48cf280e-9329-4c39-a7de-b49350de47b5	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	2
+48cf280e-9329-4c39-a7de-b49350de47b5	278573ce-1406-4d45-a02f-e2ccbf23642f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	100
+48cf280e-9329-4c39-a7de-b49350de47b5	bf52e7ca-b96b-4a7a-ab6e-251711356e29	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	171
+48cf280e-9329-4c39-a7de-b49350de47b5	285f4032-29dc-4c3d-9280-dfd303e69fd5	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	43
+48cf280e-9329-4c39-a7de-b49350de47b5	29e50bfd-2173-479e-833f-4087584b38f9	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	85
+48cf280e-9329-4c39-a7de-b49350de47b5	b25a5be3-39e2-4c57-8cd6-a9d5677be90b	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	50
+48cf280e-9329-4c39-a7de-b49350de47b5	6df97308-8578-4785-9a28-ca602f45d00f	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 18:10:26.978538+00	2020-04-22 18:10:26.978538+00	250
+4adcf298-afb7-4ca1-ab87-3a99a92d99cf	278573ce-1406-4d45-a02f-e2ccbf23642f	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 18:12:33.430962+00	2020-04-22 18:12:33.430962+00	4
+4adcf298-afb7-4ca1-ab87-3a99a92d99cf	55ceff1c-d7ab-411b-96a8-e73a617a43be	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 18:12:33.430962+00	2020-04-22 18:12:33.430962+00	4
+4adcf298-afb7-4ca1-ab87-3a99a92d99cf	a812ea49-0a11-4970-8e06-b5560999740f	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 18:12:33.430962+00	2020-04-22 18:12:33.430962+00	4
+4adcf298-afb7-4ca1-ab87-3a99a92d99cf	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 18:12:33.430962+00	2020-04-22 18:12:33.430962+00	2
+4adcf298-afb7-4ca1-ab87-3a99a92d99cf	6df97308-8578-4785-9a28-ca602f45d00f	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 18:12:33.430962+00	2020-04-22 18:12:33.430962+00	3
+4adcf298-afb7-4ca1-ab87-3a99a92d99cf	d5c1d741-86be-405c-973e-424a2208f662	341f67f3-1eb9-42ff-b086-ae9ee549b15e	2020-04-22 18:12:33.430962+00	2020-04-22 18:12:33.430962+00	1
+bcaf56d1-8e04-4dc4-984d-e2eb0b823517	f528e891-0838-425d-9521-6818894e8b7b	ab843184-f696-42b6-86cf-82ab6f6588cb	2020-04-22 18:15:09.554453+00	2020-04-22 18:15:09.554453+00	473
+bcaf56d1-8e04-4dc4-984d-e2eb0b823517	752edad3-c2bf-47c6-aa39-0922e2151917	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:15:09.554453+00	2020-04-22 18:15:09.554453+00	5
+bcaf56d1-8e04-4dc4-984d-e2eb0b823517	278573ce-1406-4d45-a02f-e2ccbf23642f	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:15:09.554453+00	2020-04-22 18:15:09.554453+00	64
+bcaf56d1-8e04-4dc4-984d-e2eb0b823517	288ce290-b36b-479e-bcfb-876cc4e21917	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 18:15:09.554453+00	2020-04-22 18:15:09.554453+00	1.5
+35989404-c9cc-486b-91c0-41a32e89a0b3	6726ff9c-3d0c-4ca4-93aa-4500892a0e21	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	1
+35989404-c9cc-486b-91c0-41a32e89a0b3	c94664ae-9ab8-4e1d-b6df-0cdb83054b2d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	1
+35989404-c9cc-486b-91c0-41a32e89a0b3	f1c225cc-b3d0-49db-b9e4-b6ed1a82c527	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	1
+35989404-c9cc-486b-91c0-41a32e89a0b3	a8120ffe-0648-4671-bd26-772b8dacb21f	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	1
+35989404-c9cc-486b-91c0-41a32e89a0b3	06b5086d-99c2-4b3e-b5c6-679ca088cdba	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	4
+35989404-c9cc-486b-91c0-41a32e89a0b3	4aa9ef25-1407-42ee-a1da-a9e0a44dc41c	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	0.5
+35989404-c9cc-486b-91c0-41a32e89a0b3	6af093e4-9b75-4270-84f6-53264b632137	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	200
+35989404-c9cc-486b-91c0-41a32e89a0b3	3fb3c62a-4d3d-404b-8862-c4f33eaa0467	b26964ae-a356-401d-9eca-7d4daa13a83e	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	2
+35989404-c9cc-486b-91c0-41a32e89a0b3	7ce9c46e-3b9a-492f-8571-6bc9423dceae	7bc3fe10-aa10-4331-979f-38945ad9b977	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	400
+35989404-c9cc-486b-91c0-41a32e89a0b3	d00125be-5a0b-4695-a7ec-b6158e8f2611	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	2
+35989404-c9cc-486b-91c0-41a32e89a0b3	b873f041-72ea-48f4-b4fc-3131c9c4178b	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	1
+35989404-c9cc-486b-91c0-41a32e89a0b3	b015a13e-0120-4c52-b0c8-d604e34a88a6	c0799d48-e1d6-43b2-b73d-2e259c8d1662	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	1
+35989404-c9cc-486b-91c0-41a32e89a0b3	687192e1-e5f8-4873-a497-7d44107e1fee	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	0.25
+35989404-c9cc-486b-91c0-41a32e89a0b3	6f7c50aa-2179-4b51-9c17-d490d8d8fe24	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	0.25
+35989404-c9cc-486b-91c0-41a32e89a0b3	fb61b18c-4302-4b8e-b84f-bf2b6bec35b4	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	0.25
+35989404-c9cc-486b-91c0-41a32e89a0b3	9e68660c-748e-4163-8a2b-14f685897ebe	2fd8d7ba-6233-4086-b96c-1eb889d39120	2020-04-22 18:21:29.906896+00	2020-04-22 18:21:29.906896+00	0.25
+f8212ef2-8166-44fe-bde9-d18ffc0c65d9	5e5f5355-23df-469c-923a-d2264129038e	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:24:14.648157+00	2020-04-22 18:24:14.648157+00	2
+f8212ef2-8166-44fe-bde9-d18ffc0c65d9	01ec7734-eb32-4e31-9707-2cee7567229d	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:24:14.648157+00	2020-04-22 18:24:14.648157+00	4
+f8212ef2-8166-44fe-bde9-d18ffc0c65d9	f61c7096-ad2e-41fb-b821-d57bc5766d5c	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:24:14.648157+00	2020-04-22 18:24:14.648157+00	1
+f8212ef2-8166-44fe-bde9-d18ffc0c65d9	737cec9a-73de-4f7f-b22c-22fc77c37492	945bd65a-7027-48fa-831c-cc49df531b07	2020-04-22 18:24:14.648157+00	2020-04-22 18:24:14.648157+00	1
+f8212ef2-8166-44fe-bde9-d18ffc0c65d9	873f9073-d5cf-4faf-88c6-1d4897e6b58d	691f3763-8262-45a6-8188-f9c2d6a32d34	2020-04-22 18:24:14.648157+00	2020-04-22 18:24:14.648157+00	6
+f8212ef2-8166-44fe-bde9-d18ffc0c65d9	7f1397fd-2b29-4dc2-bf4f-19c2fc83b074	5b016058-842f-445f-839d-0605af883b49	2020-04-22 18:24:14.648157+00	2020-04-22 18:24:14.648157+00	0.5
+\.
+
+
+--
+-- Data for Name: recipe_label; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.recipe_label (label_id, recipe_id, created_at, updated_at) FROM stdin;
+a0fd1a17-6981-4b1c-91bc-b331d4589234	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:11:46.57004+00	2020-04-06 12:11:46.57004+00
+357e106e-1b07-45a9-9004-c84490ee7087	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 15:20:11.556462+00	2020-04-21 15:20:11.556462+00
+357e106e-1b07-45a9-9004-c84490ee7087	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:20:11.556462+00	2020-04-21 15:20:11.556462+00
+357e106e-1b07-45a9-9004-c84490ee7087	335f40ed-072f-49f5-9c8c-d4a73258eb41	2020-04-21 15:20:11.556462+00	2020-04-21 15:20:11.556462+00
+357e106e-1b07-45a9-9004-c84490ee7087	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-21 15:20:11.556462+00	2020-04-21 15:20:11.556462+00
+357e106e-1b07-45a9-9004-c84490ee7087	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 15:20:11.556462+00	2020-04-21 15:20:11.556462+00
+357e106e-1b07-45a9-9004-c84490ee7087	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 15:20:11.556462+00	2020-04-21 15:20:11.556462+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:21:40.143073+00	2020-04-21 15:21:40.143073+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 15:21:40.143073+00	2020-04-21 15:21:40.143073+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 15:21:40.143073+00	2020-04-21 15:21:40.143073+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 15:21:40.143073+00	2020-04-21 15:21:40.143073+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 15:21:40.143073+00	2020-04-21 15:21:40.143073+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	3854e245-9420-45bf-8c1b-ae5034132673	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	ea7c374c-310e-4b83-ab94-06170b271168	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+eaaf9e0c-1ef1-4abb-b770-9b7784df205e	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-21 15:23:36.640272+00	2020-04-21 15:23:36.640272+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 15:26:00.476461+00	2020-04-21 15:26:00.476461+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	82595eba-6f0a-4d50-99fd-f5a346ca5783	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 15:28:56.755085+00	2020-04-21 15:28:56.755085+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2020-04-21 15:29:49.38523+00	2020-04-21 15:29:49.38523+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-21 15:29:49.38523+00	2020-04-21 15:29:49.38523+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 15:29:49.38523+00	2020-04-21 15:29:49.38523+00
+9b3e1492-7a04-493c-b56e-c2bb4fc21ea9	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-21 15:29:49.38523+00	2020-04-21 15:29:49.38523+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-22 14:32:19.568694+00	2020-04-22 14:32:19.568694+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-22 14:41:17.005148+00	2020-04-22 14:41:17.005148+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-22 14:51:38.778579+00	2020-04-22 14:51:38.778579+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-22 14:56:36.288581+00	2020-04-22 14:56:36.288581+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-22 15:02:24.792815+00	2020-04-22 15:02:24.792815+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-22 15:22:33.569123+00	2020-04-22 15:22:33.569123+00
+2138fab8-8cec-4cf7-9dd0-9b14b03cd328	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-22 15:35:35.981297+00	2020-04-22 15:35:35.981297+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	385aaaea-d972-48cc-b873-772ada74c644	2020-04-22 15:41:46.687948+00	2020-04-22 15:41:46.687948+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-22 15:53:54.364326+00	2020-04-22 15:53:54.364326+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-22 16:18:07.455924+00	2020-04-22 16:18:07.455924+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-22 16:18:34.410259+00	2020-04-22 16:18:34.410259+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-22 16:31:25.39012+00	2020-04-22 16:31:25.39012+00
+9ead3bd2-67bf-4bed-b029-b259e7e1f483	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-22 16:31:25.39012+00	2020-04-22 16:31:25.39012+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-22 16:32:26.603163+00	2020-04-22 16:32:26.603163+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-22 16:38:40.139036+00	2020-04-22 16:38:40.139036+00
+9ead3bd2-67bf-4bed-b029-b259e7e1f483	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-22 16:46:23.757104+00	2020-04-22 16:46:23.757104+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-22 16:46:23.757104+00	2020-04-22 16:46:23.757104+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-22 16:53:28.488982+00	2020-04-22 16:53:28.488982+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2020-04-22 16:58:07.14945+00	2020-04-22 16:58:07.14945+00
+8c758d35-9a38-470f-aa91-ecd261cf01e6	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-22 17:13:40.404312+00	2020-04-22 17:13:40.404312+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-22 17:13:40.404312+00	2020-04-22 17:13:40.404312+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-22 17:22:27.602702+00	2020-04-22 17:22:27.602702+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-22 17:23:33.879467+00	2020-04-22 17:23:33.879467+00
+9ead3bd2-67bf-4bed-b029-b259e7e1f483	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-22 17:23:33.879467+00	2020-04-22 17:23:33.879467+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-22 17:30:50.126721+00	2020-04-22 17:30:50.126721+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-22 17:37:11.652819+00	2020-04-22 17:37:11.652819+00
+9ead3bd2-67bf-4bed-b029-b259e7e1f483	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-22 17:42:25.250206+00	2020-04-22 17:42:25.250206+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-22 17:42:25.250206+00	2020-04-22 17:42:25.250206+00
+9ead3bd2-67bf-4bed-b029-b259e7e1f483	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-22 17:42:49.844657+00	2020-04-22 17:42:49.844657+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	3854e245-9420-45bf-8c1b-ae5034132673	2020-04-22 17:48:43.413063+00	2020-04-22 17:48:43.413063+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	2020-04-22 17:48:43.413063+00	2020-04-22 17:48:43.413063+00
+2138fab8-8cec-4cf7-9dd0-9b14b03cd328	48cf280e-9329-4c39-a7de-b49350de47b5	2020-04-22 18:31:27.359886+00	2020-04-22 18:31:27.359886+00
+2138fab8-8cec-4cf7-9dd0-9b14b03cd328	4adcf298-afb7-4ca1-ab87-3a99a92d99cf	2020-04-22 18:31:27.359886+00	2020-04-22 18:31:27.359886+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 18:32:52.187958+00	2020-04-22 18:32:52.187958+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	05f05ddf-d67d-47b0-8365-4a84f4fe1e17	2020-04-22 18:32:52.187958+00	2020-04-22 18:32:52.187958+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	532f2790-9c84-42ac-abc0-3a6ca6b0497e	2020-04-22 18:33:39.410546+00	2020-04-22 18:33:39.410546+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	76fa7744-1fa1-4669-b7d9-c84e4fe270d9	2020-04-22 18:33:39.410546+00	2020-04-22 18:33:39.410546+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	86b73a62-4d28-4362-bdef-90d6576f438b	2020-04-22 18:33:39.410546+00	2020-04-22 18:33:39.410546+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	b42b5a5e-b65f-41ab-82fa-437fa661153e	2020-04-22 18:33:39.410546+00	2020-04-22 18:33:39.410546+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	f3b719ea-3ab6-4b95-8305-7c3e39d84227	2020-04-22 18:33:39.410546+00	2020-04-22 18:33:39.410546+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	f8212ef2-8166-44fe-bde9-d18ffc0c65d9	2020-04-22 18:33:39.410546+00	2020-04-22 18:33:39.410546+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	2020-04-22 18:34:02.482663+00	2020-04-22 18:34:02.482663+00
+1ed66a59-6a92-4e1e-92bf-fd9fa8d57435	b9cedac1-5bb6-4c3d-88a5-947e7184051e	2020-04-22 18:34:02.482663+00	2020-04-22 18:34:02.482663+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-22 18:40:43.726881+00	2020-04-22 18:40:43.726881+00
+a0fd1a17-6981-4b1c-91bc-b331d4589234	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-22 18:40:43.726881+00	2020-04-22 18:40:43.726881+00
+\.
+
+
+--
+-- Data for Name: recipes; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.recipes (uuid, name, description, timing, serving_size, created_at, updated_at) FROM stdin;
+66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	Beans on toast	Beans on toast	00:05:00	2	2020-04-06 11:13:53.496646+00	2020-04-06 11:13:53.496646+00
+88921e1a-def8-455f-8b19-2e89a40de8a4	Mexican enchiladas (vegetarian)	An excellent light lunch dish served with a salad or a slightly heavier dinner	00:50:00	2	2020-04-21 14:13:41.191986+00	2020-04-21 14:13:41.191986+00
+ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	Massaman curry	With mini cauliflower, lentils, beans and sweet potato	00:30:00	2	2020-04-21 14:20:26.06109+00	2020-04-21 14:20:26.06109+00
+535234f4-58b5-4890-9c5f-4a985db7795e	Spicy peanut stew	With crunchy vegetables and flatbread	00:30:00	2	2020-04-21 14:20:26.06109+00	2020-04-21 14:20:26.06109+00
+55930764-1d55-4d28-9c03-4e27edf35c97	Cauliflower with lemony butter breadcrumbs	With cheddar and roast potatoes	00:35:00	2	2020-04-21 14:20:26.06109+00	2020-04-21 14:20:26.06109+00
+748ba4b1-8cba-4d08-8a51-1a4a052abae8	Summer risotto with saffron	With bell peppers, courgette and sun-dried tomatoes	00:30:00	2	2020-04-21 14:20:26.06109+00	2020-04-21 14:20:26.06109+00
+58ae77ce-46f5-4cb4-b1b8-65485579533c	Chocolate bean brownies	With caramelised peaches and sweet sour cream	01:20:00	10	2020-04-21 14:25:56.194977+00	2020-04-21 14:25:56.194977+00
+385aaaea-d972-48cc-b873-772ada74c644	Veggie fladen kebab	Oven-baked vegetables in flatbread with garlic yogurt and tomato-cheese paste	00:30:00	2	2020-04-21 14:28:47.254039+00	2020-04-21 14:28:47.254039+00
+81f6611c-75f0-4690-97a1-b71cc88d7f3a	Vegetarian moussaka	A really easy gluten-free and vegetarian moussaka is the comfort food every veggie needs in their life.	01:30:00	4	2020-04-21 14:34:46.205652+00	2020-04-21 14:34:46.205652+00
+24a8af08-7f72-4a80-8510-12b9d90535f1	Sweet potato katsu curry	You can make this with sweet potato, butternut squash, aubergine or pumpkin.	00:45:00	4	2020-04-21 14:34:46.205652+00	2020-04-21 14:34:46.205652+00
+f6c686e3-931b-4775-b455-1c8656066cb7	Roasted potato and veggie power bowl	The trick is to cut all the veg the same size so they cook in the same amount of time.	00:55:00	2	2020-04-21 14:34:46.205652+00	2020-04-21 14:34:46.205652+00
+540387b3-4e29-47d4-b968-3f10a3354a5f	Colourful oven vegetables with halloumi	Spicy and gluten-free dish.	00:35:00	2	2020-04-21 14:13:41.191986+00	2020-04-21 14:13:41.191986+00
+bab60370-f2fd-45dc-b2b0-fca515fbbe3e	Creamy tomato and roasted veg risotto	A deliciously creamy vegan risotto	00:45:00	4	2020-04-21 14:28:47.254039+00	2020-04-21 14:28:47.254039+00
+d05b2081-7ad8-417a-ba30-bb9e8171f156	Butternut squash alfredo stuffed shells	Pasta dish with a light alfredo sauce	01:00:00	4	2020-04-17 13:30:42.799758+00	2020-04-17 13:30:42.799758+00
+7c732541-41eb-4e13-98d2-968afadedec8	Smoky sweet potato and feta tacos	With homemade salsa and tabasco mayonnaise	00:30:00	2	2020-04-21 14:20:26.06109+00	2020-04-21 14:20:26.06109+00
+35989404-c9cc-486b-91c0-41a32e89a0b3	Quickdraw quesadillas	With Tomato Salsa and Citrus Sour Cream	00:40:00	2	2020-04-21 14:25:56.194977+00	2020-04-21 14:25:56.194977+00
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	Bibimbap korean vegbowl	With fried eggs, cucumber salad and sushi rice	00:30:00	2	2020-04-06 11:33:11.636138+00	2020-04-06 11:33:11.636138+00
+043244fe-d09c-4c5d-9ae3-462e9c0f7810	Cheesy broccoli pasta bake	Whip up this cheap, simple and satisfying meal in just 30 minutes	00:30:00	4	2020-04-21 14:37:54.11341+00	2020-04-21 14:37:54.11341+00
+05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	Satay vegetable stirfry	This simple recipe makes a delicious satay sauce that complements the crisp stir fry vegetables.	00:45:00	4	2020-04-21 14:34:46.205652+00	2020-04-21 14:34:46.205652+00
+b54bfb64-3718-40a5-b03c-734bbfa0cd4d	Pad phak ruam mitr	Thai stir-fried vegetables, use any seasonal vegetables you have.	00:25:00	4	2020-04-21 14:39:50.10649+00	2020-04-21 14:39:50.10649+00
+03d187d2-bda8-4bdd-9a98-9ac9641811fd	Black bean veggie burgers	A pretty tasty and filling veggie burger	00:35:00	4	2020-04-21 14:37:54.11341+00	2020-04-21 14:37:54.11341+00
+64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	Warming cauliflower dhal	With lentils and greek yoghurt	00:40:00	2	2020-04-21 14:41:13.242339+00	2020-04-21 14:41:13.242339+00
+cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	Aubergine parmesan	This recipe is made lighter by being baked with a crispy Panko breading, yet still has all of the delicious and comforting flavors of the classic dish!	00:50:00	8	2020-04-21 14:43:31.202529+00	2020-04-21 14:43:31.202529+00
+2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	Curried satay veggie bowls	These take less than 20 minutes to make, they’re naturally gluten-free and vegan, and they are made with the most heavenly red curry sauce!  Feel free to add in extra veggies or rice noodles, if you would like.	00:20:00	2	2020-04-21 14:43:31.202529+00	2020-04-21 14:43:31.202529+00
+ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	Mediterranean vegetable lasagne	Veg out while this ratatouille lasagne's in the oven! You'll fill the sauce with Mediterranean flavours like basil, aubergine and courgette, top with cheesy béchamel sauce and bake 'til golden.	00:50:00	2	2020-04-21 14:44:52.435639+00	2020-04-21 14:44:52.435639+00
+73896303-5e9e-47b0-8423-45eb2b8ef2ad	Spinach, sweet potato and lentil dhal	A comforting vegan one-pot recipe that counts for 3 of your 5-a-day! You can't go wrong with this iron-rich, low-fat, low-calorie supper	00:45:00	4	2020-04-21 14:45:40.348053+00	2020-04-21 14:45:40.348053+00
+b84f2a90-0df5-490c-8d12-c9f2dddb04a4	Sweet potato fajitas	One sheet pan does all the hard work, roasting the sweet potatoes, onions, and bell peppers to complete fajita perfection.	00:30:00	4	2020-04-21 14:49:41.265178+00	2020-04-21 14:49:41.265178+00
+612101a3-bfe9-4a8a-8274-d1e4ebd3b256	Grilled vegetable wraps with salsa and guacamole	A Friday night quick supper that's healthy and delicious - who could ask for anything more?	01:00:00	4	2020-04-21 14:49:41.265178+00	2020-04-21 14:49:41.265178+00
+045e6509-2b94-4d0a-aefd-9a320fc8a790	Pierogi	These Polish dumplings are the real deal and surprisingly simple to make. Serve sprinkled with crisp fried onions.	03:00:00	30	2020-04-21 14:49:41.265178+00	2020-04-21 14:49:41.265178+00
+3854e245-9420-45bf-8c1b-ae5034132673	Lasagne rolls with roasted red pepper sauce	These rolls require some assembly time but are a nice change of pace from layered pasta. Use baby spinach to eliminate the task of trimming stems.	00:35:00	4	2020-04-21 14:50:58.161064+00	2020-04-21 14:50:58.161064+00
+82595eba-6f0a-4d50-99fd-f5a346ca5783	Sudesh's curry	This is a good base for a curry but needs a lot of adapting to get the flavours correct	01:45:00	4	2020-04-21 14:53:36.414466+00	2020-04-21 14:53:36.414466+00
+6b1b89d5-54aa-4e5d-801c-893060d9ca7e	Flatbread with only 3 ingredients	This recipe uses a base of yogurt and flour - and that's it!	00:10:00	6	2020-04-21 14:53:36.414466+00	2020-04-21 14:53:36.414466+00
+bcaf56d1-8e04-4dc4-984d-e2eb0b823517	Easy Creme Brulee	This Creme Brûlée is much easier thanks to not needing to use a double boiler or a blow torch. And still super tasty!	01:30:00	4	2020-04-21 14:58:15.755058+00	2020-04-21 14:58:15.755058+00
+48cf280e-9329-4c39-a7de-b49350de47b5	Apple and rhubarb crumble	A lovely dessert, serve with a dollop of vanilla ice-cream	00:50:00	4	2020-04-21 14:58:15.755058+00	2020-04-21 14:58:15.755058+00
+4adcf298-afb7-4ca1-ab87-3a99a92d99cf	Egg free chocolate mug cake	When you get a chocolate craving but can't be bothered to make a full cake. It is quick and easy to make and only uses a few basic baking ingredients.	00:05:00	1	2020-04-21 14:58:15.755058+00	2020-04-21 14:58:15.755058+00
+ee905478-bfb1-4e4c-9349-5a34d2234f4d	Broccoli-cheddar pockets	A quick and tasty lunch which will keep you going until dinner. Eat warm on a cold day, or serve cold on warmer days.	00:35:00	4	2020-04-21 15:05:40.083812+00	2020-04-21 15:05:40.083812+00
+ea7c374c-310e-4b83-ab94-06170b271168	Couscous salad with chickpeas and feta	A 12 minute, no cook, giant Couscous Salad with sun dried tomato, feta, lettuce, herbs and the nutty tastiness of chickpeas.	00:12:00	6	2020-04-21 15:05:40.083812+00	2020-04-21 15:05:40.083812+00
+190433f1-f3c5-4bee-b054-915d3d94df0c	Sticky sesame cauliflower	Battered, baked, and smothered in a sweet and spicy sesame sauce, this sticky sesame cauliflower is sure to be enjoyed by everyone!	00:45:00	4	2020-04-21 15:05:40.083812+00	2020-04-21 15:05:40.083812+00
+7ce3aa95-6cb4-43be-859d-858eaf915886	Roasted cauliflower tacos	What these veggie tacos lack in meat, they make up for in big, bold flavors. Bite after bite your tastebuds are treated to a medley of textures and tastes that hit all the high points you expect.	01:00:00	6	2020-04-21 15:05:40.083812+00	2020-04-21 15:05:40.083812+00
+76fa7744-1fa1-4669-b7d9-c84e4fe270d9	Apple, lemon and ginger juice	t's high in Vitamins A, B and C, cleanses the liver and will help remove mucus from the body.	00:15:00	1	2020-04-21 15:06:34.471222+00	2020-04-21 15:06:34.471222+00
+f3b719ea-3ab6-4b95-8305-7c3e39d84227	Kale, apple, cucumber, mint, lemon juice	Low calorie pick-me up juice. Perfect for waking you up in the morning.	00:15:00	1	2020-04-21 15:07:28.521752+00	2020-04-21 15:07:28.521752+00
+f8212ef2-8166-44fe-bde9-d18ffc0c65d9	Mean green juice	Super refreshing and low calorie juice	00:15:00	1	2020-04-21 15:08:31.423507+00	2020-04-21 15:08:31.423507+00
+b42b5a5e-b65f-41ab-82fa-437fa661153e	Apple, carrot and ginger juice	Filled with vitamin A to help your complexion look smoother and brighter	00:15:00	1	2020-04-21 15:14:17.335571+00	2020-04-21 15:14:17.335571+00
+86b73a62-4d28-4362-bdef-90d6576f438b	Wagamama raw juice	A refreshing juice with tomato and cucumber, just like Wagamama serve!	00:15:00	1	2020-04-21 15:14:17.335571+00	2020-04-21 15:14:17.335571+00
+532f2790-9c84-42ac-abc0-3a6ca6b0497e	Berry A-Peeling juice	Like a strawberry lime-ade, but way better.	00:15:00	1	2020-04-21 15:14:17.335571+00	2020-04-21 15:14:17.335571+00
+05f05ddf-d67d-47b0-8365-4a84f4fe1e17	Electric green limeade juice	Contributing to many health benefits such as healthy skin, kidney & liver cleansing, weight loss, energy boost, and more, this yummy limeade will definitely recharge your batteries after a training session while you recover faster.	00:15:00	1	2020-04-21 15:14:17.335571+00	2020-04-21 15:14:17.335571+00
+40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	Really easy lemonade	A simple classic that everyone can enjoy. Perfect on a hot summer's day	00:10:00	6	2020-04-21 15:14:17.335571+00	2020-04-21 15:14:17.335571+00
+b9cedac1-5bb6-4c3d-88a5-947e7184051e	Golden glow elixir juice	Pamper your glow with this golden glow elixir because when you feel healthy, you feel happy.	00:15:00	3	2020-04-21 15:16:02.349643+00	2020-04-21 15:16:02.349643+00
+335f40ed-072f-49f5-9c8c-d4a73258eb41	Caprese sandwich with pesto	This Caprese Sandwich takes a twist by being toasted with melted mozzarella, and pesto. The sandwich is perfect for an everyday lunch or a picnic!	00:10:00	1	2020-04-21 14:59:31.831111+00	2020-04-21 14:59:31.831111+00
+b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	Bombay potato and spinach pies	These spicy filo pies are ideal for a lunch with salad or as part of a buffet	01:15:00	4	2020-04-21 14:54:33.999546+00	2020-04-21 14:54:33.999546+00
+\.
+
+
+--
+-- Data for Name: steps; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.steps (uuid, index, instruction, recipe_id, created_at, updated_at) FROM stdin;
+28016cc4-48c2-4f00-b202-048bc0cd32b2	1	Open tin and pour contents into saucepan	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+76715892-1369-45c9-87c4-0a6f4d5517b9	2	Put saucepan on hob over a medium heat	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+fea45fd4-9d9c-4d44-aece-65d8cfb04339	3	Stir while cooking	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+7571b842-4b74-4a32-827e-e51404f75008	4	Make toast using the toaster	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+e5ff0f42-563b-404a-ad58-db8a4aae7b51	5	Put toast on a plate and pour the beans over the toast	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+d8c8b070-d5bd-4062-9dfb-921f458b6a0f	6	Sprinkle over some cheese	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+7e75f8fd-af3e-4b8b-bbd6-0269aa97dd7a	7	Steep saucepan in cold water and switch off the cooker	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+dad00a29-2b17-4d7b-bccb-736da728d021	8	Stack dishes, clean table and wash up.	66fbb8b4-cd6f-498c-b297-226ce1ecaa4a	2020-04-06 11:13:53.497776+00	2020-04-06 11:13:53.497776+00
+6cd2ff1e-c9ec-42d1-8af8-a582b3dc8d86	1	Wash veg. Boil 225ml of water for the rice.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:37:50.427908+00	2020-04-06 11:37:50.427908+00
+8eb1479a-7fa9-40eb-9086-0d36e2972c6f	3	Pour boiling water into a small saucepan, lightly salt and bring to the boil. Stir in the rice and simmer covered for about 15 minutes over low heat.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:37:50.427908+00	2020-04-06 11:37:50.427908+00
+e84f93ce-77b5-420f-a60d-6c7019724327	4	Peel and grate the carrots.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:37:50.427908+00	2020-04-06 11:37:50.427908+00
+0eda518f-7536-463e-8e71-43120ee9ebe5	5	Cut the ends of the cucumber and cut the cucumber into thin slices.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:37:50.427908+00	2020-04-06 11:37:50.427908+00
+c1e5b7a6-fb66-44d2-907c-69c4f1c41fe3	6	Cut the white and green parts of the spring onions into thin rings separately.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:37:50.427908+00	2020-04-06 11:37:50.427908+00
+ffe0b6f2-897f-4e2a-aa58-ed0d72f793d4	7	Peel and press the garlic .	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:37:50.427908+00	2020-04-06 11:37:50.427908+00
+24b0f51e-cc73-457f-96b1-adbe1adf3cd3	2	Rinse sushi rice with cold water in a sieve until it runs clear.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:37:50.427908+00	2020-04-06 11:37:50.427908+00
+d6c84cb9-9c10-4e9f-aa61-83716cf6614c	8	In a small bowl , mix the cucumber slices , half of the sesame oil , crushed chilli (hot!) , half of the soy sauce , a quarter of the pressed garlic and half of the sesame seeds. Season with salt and pepper.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:58:56.591218+00	2020-04-06 11:58:56.591218+00
+8c5994cd-323b-4a14-b179-a46b0a3f4143	9	Mix the grated carrots with the remaining sesame oil and sesame seeds in another small bowl.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:58:56.591218+00	2020-04-06 11:58:56.591218+00
+dc731f4b-afd2-4149-bf10-956003cd2c43	10	Roast sesame seeds in a large pan without adding fat for 2-3 minutes until they start to smell. Then remove from the pan.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 11:58:56.591218+00	2020-04-06 11:58:56.591218+00
+0e76c817-63b5-40c3-a167-88b93170d5d7	11	Add white spring onion rings , remaining garlic, bean sprouts and baby spinach in portions to the same pan without adding fat .	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:10:31.273507+00	2020-04-06 12:10:31.273507+00
+443e6bce-a98b-400c-b0fa-4a4822dc03b8	12	Let the spinach collapse a little and then take it out of the pan.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:10:31.273507+00	2020-04-06 12:10:31.273507+00
+a611f5aa-58b5-4d1a-b39b-1a6f407097ed	13	In the pan, heat oil again on high heat and fry the eggs in it for approx. 3 minutes. Season with salt and pepper	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:10:31.273507+00	2020-04-06 12:10:31.273507+00
+defdd284-e531-4080-a222-6fa14b1392fd	14	Use a fork to fluff up the sushi rice. Stir in the rice wine vinegar.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:10:31.273507+00	2020-04-06 12:10:31.273507+00
+c552f0dc-e227-42ca-8333-3bbb496bff55	15	Arrange rice in bowls. Add the spinach, bean sprouts, carrot salad and cucumber salad on top of the rice.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:10:31.273507+00	2020-04-06 12:10:31.273507+00
+3b198f17-9db0-4be3-a189-fc545bc16dc7	16	Top with fried egg and Sambal Oelek, sprinkle with green spring onion rings and enjoy.	a611f5aa-58b5-4d1a-b39b-1a6f407097ed	2020-04-06 12:10:31.273507+00	2020-04-06 12:10:31.273507+00
+0e796a26-27f6-4ddb-90cf-37a85305628a	2	Peel the sweet potato and cut into 2 cm cubes.	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+71f9c3b5-27b2-4296-9995-e4c0e94e8c84	3	Peel the red onion , cut it in half and cut it into slices about 1 cm wide.	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+21cccd49-51a2-4c5f-bc10-5792a60bc3e0	4	Spread the sweet potato cubes and onion wedges on a baking sheet covered with baking paper and season with salt and pepper. Bake vegetables on the middle shelf in the oven for about 25 minutes until the sweet potato cubes are soft.	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+901e62f3-291c-4476-a0cd-2ce1bd17da50	5	Halve the tomato , remove the stalk, cut the tomato halves into wedges and place in a large bowl. Halve the avocado , remove the core, remove the pulp and cut into small cubes. Add to the tomato cubes and set aside.	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+f92366b5-1801-48dd-8d27-4a1b1ef4e003	6	Peel and chop garlic. Halve and core the chilli and finely chop the chilli halves. Put the garlic and chilli into a bowl with some cumin. Halve the lemon. Add lemon juice and olive oil to the bowl as desired and mix everything. Season with salt and pepper.	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+c81c7cd1-19ea-41ad-972f-d49c178f9bca	7	Cut Halloumi into cubes approx. 3 cm in size. Heat oil on a medium heat in a large pan and fry the halloumi cubes all over for 3-4 minutes until golden brown.	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+b8ad2808-c8ae-47cd-aa1f-264c5a78e33d	8	Place the sweet potato cubes and onion wedges in the large bowl and mix gently. Divide on plate, top with halloumi cubes and drizzle with the chimichurri. Enjoy	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+2d7b6e23-519e-4304-9809-327ec489a2ce	1	Preheat oven to 180°C (gas mark 4)	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+76d32a15-9845-4c2f-8d04-c81f3316bca6	2	Begin by making the salsa: first tip the tomatoes into a sieve over a bowl to let the excess liquid drain away.	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+ee805129-c92b-4a4c-8f56-5eb457e16c96	3	Next remove the stalk from the chili, cut it in half, remove and discard the seeds, chop the flesh very finely and place it in a bowl. 	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+a2ec95cd-a2b2-4c03-af1e-ed131d263e9a	4	Then add half the chopped onion, the drained tomatoes, chopped coriander leaves and lime juice, and season well with salt and pepper. Now give everything a thorough mixing.	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:37:26.908783+00	2020-04-21 15:37:26.908783+00
+09641776-5cb1-4605-8163-9b932a2275d5	5	Meanwhile, mix the 2 cheeses together in a bowl.	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:37:26.908783+00	2020-04-21 15:37:26.908783+00
+c25cf07b-9837-4a65-b865-d59dbce19626	6	Place one tortilla on a flat surface and spread a tablespoon of salsa over it, but not quite to the edges, sprinkle over a heaped tablespoon of the cheese mixture, then follow this with a tablespoon of the crème fraîche.	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:37:26.908783+00	2020-04-21 15:37:26.908783+00
+fcf99b91-0259-4cc3-ac10-cbc41f6f7d03	7	Then roll the tortilla up and place it in the baking dish with the sealed-side down. Repeat this with the others, then spread the remaining crème fraîche on top of the tortillas in the dish and sprinkle the rest of the salsa over the top, followed by the remaining cheeses and red onion.	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:37:26.908783+00	2020-04-21 15:37:26.908783+00
+9538d08a-19a8-4b49-9cd5-ceeb84419812	8	Now place the dish on a high shelf of the oven for 25-30 minutes, garnish with the extra coriander and serve absolutely immediately – if you keep them waiting they can become a bit soggy.	88921e1a-def8-455f-8b19-2e89a40de8a4	2020-04-21 15:37:26.908783+00	2020-04-21 15:37:26.908783+00
+a12f9a22-447e-4b50-b286-3b27d3486a52	2	Peel the sweet potato and cut into 1 cm cubes. Cut feta into 1cm cubes. Place both potato and feta on a lined baking sheet. Spread the smoky spice (paprika, cumin, oregano, garlic, chipotle) over them, mix gently and bake in the oven for about 20 minutes until the sweet potato pieces are tender.	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+199c738f-37c6-4c21-be82-f0d61445332e	1	Wash ingredients. Preheat oven to 200°C (static: 220°C).	540387b3-4e29-47d4-b968-3f10a3354a5f	2020-04-21 15:36:25.956046+00	2020-04-21 15:36:25.956046+00
+bc76a86e-32ac-4da2-ae08-09c02210252e	3	Peel the onion, cut in half, cut into 0.5 cm cubes and put in a small bowl. Halve the tomato, remove the stalk, cut the tomato halves into 1 cm cubes and add them to the onion cubes.	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+e226ab9a-22b3-47bf-8d10-ad63af26516d	4	Halve the lime, press the juice of 1 lime half to the salsa and cut the remaining lime into wedges. Finely chop the coriander leaves, add and season the salsa with salt and pepper.	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+082fc686-c3c7-4e81-b32c-ba1397b41398	5	Mix the mayonnaise and TABASCO® sauce in another small bowl. Halve the avocado, remove the stone, remove the pulp and cut into strips.	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+ace1d6f3-ede0-4047-854d-9e0596f1121b	6	In the last 3 minutes of the sweet potato baking time add tortilla wraps to the vegetables and bake to the end.	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+7cd654b9-c5d2-4fe7-a17d-2ed4819d92fa	7	Brush wraps with tabasco mayonnaise and sprinkle with sweet potato and shepherd's cheese cubes and tomato salsa. Finally, cover with avocado strips, roll up and enjoy with lime wedges. Enjoy!	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+93481275-bd0c-4ea1-a60a-58754c25a390	1	Wash the vegetables. Preheat oven to 200°C fan (220°C static).	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+a501971a-1d28-4233-8fe8-7a4bea31eaa9	2	Peel the potato and sweet potato and cut both into 1 cm wide cubes. Cut cauliflower into small florets. Cut the ends of the courgette, quarter them lengthways and cut them into 1 cm wide pieces. Cut the ends of the green beans.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+6744e048-35bd-4aa2-bd36-7ef924c4b45a	3	Spread the potato cubes, sweet potato cubes, cauliflower, courgette and green beans on a lined baking sheet with 1 tablespoon of olive oil and season with salt and pepper. Roast on the middle shelf in the oven for 20-25 minutes.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+57f4a3f3-5a32-4e28-9234-cdd7c4443e0b	4	Place the lentils in a sieve and rinse with cold water until it runs clear.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+a2d0992b-c673-45da-98bf-27e36c84deca	5	Prepare 200ml vegetable stock. Peel the onion and cut into strips. Heat a tablespoon of oil in a large pan, heat onion for 3-4 mins until they are transparent.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:48:57.741887+00	2020-04-21 15:48:57.741887+00
+b0cb723c-6d05-4fda-817a-e6473e8a3b8a	6	Add massaman curry paste and fry for 2 mins until the spices are fragrant. Add the vegetable stock and simmer for around 5 mins.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:48:57.741887+00	2020-04-21 15:48:57.741887+00
+fe1358b9-d48e-4ef3-85bf-9fbde816dce7	7	Add the coconut milk and lentils to the sauce in the pan and continue to simmer for approx. 5 minutes.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:48:57.741887+00	2020-04-21 15:48:57.741887+00
+6bbef7fa-ac4d-4b8c-83eb-a0b5bf551b9c	8	Add the remaining vegetables from the oven to the pan. Season well. Cut the spring onion into fine rings.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:48:57.741887+00	2020-04-21 15:48:57.741887+00
+01bc28d4-2fd1-4390-8b9f-f1c216a3c2bf	9	Serve in bowls, top with spring onion rings and enjoy.	ea44a95a-a03f-4f12-a5fc-48d5cfd418d4	2020-04-21 15:48:57.741887+00	2020-04-21 15:48:57.741887+00
+8ed756ad-a308-432e-a600-f4888da0c946	1	Wash the vegetables. Heat 500ml of water in a kettle. Preheat oven to 180°C fan (200°C static oven).	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 15:54:07.128289+00	2020-04-21 15:54:07.128289+00
+ac95e104-208e-4467-931a-fc4ff6af6b26	2	Make the stock by dissolving 1 vegetable stock cube in the boiled water.	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 15:54:07.128289+00	2020-04-21 15:54:07.128289+00
+8179666a-05a8-4c67-aa42-1b8685f04161	3	Peel the onion and slice finely. Halve the chili, remove seeds and cut into fine rings. Peel and press the garlic. Peel the carrots and slice them. Halve tomatoes, remove stalk and cut tomato halves into wedges. Cut the ends of the beans and cut them in half.	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 15:54:07.128289+00	2020-04-21 15:54:07.128289+00
+d8a37d81-4d36-4b4d-900a-241367b7cced	4	Heat 2 tablespoons of oil in a medium saucepan and sauté onion slices in it until translucent. Add the chilli rings, pressed garlic, beans, carrots and peanut butter and stir well. Add in the vegetable stock and simmer for 10 mins.	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 15:54:07.128289+00	2020-04-21 15:54:07.128289+00
+ecb8b59e-6e34-4745-8cf9-aa2e04379619	5	Add the sliced tomato to the pan and continue to simmer for a further 5 mins. Season well with salt and pepper.	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 15:54:07.128289+00	2020-04-21 15:54:07.128289+00
+b7fa4152-3415-465b-bd96-a1a3ce723aca	6	Dry-fry some peanuts in a small frying pan until they brown and are fragrant. Take them out of the pan, leave to cool and roughly chop.	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+404ae69d-25db-4669-8f30-979b10734bab	7	Cut the mini flatbread into strips, place on a baking sheet and bake in the oven until crispy for about 5 minutes	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+5b36072f-85e1-4637-a885-4115a59b3303	8	Pour the stew into bowls, sprinkle with the peanuts. Enjoy together with the crispy flatbread strips.	535234f4-58b5-4890-9c5f-4a985db7795e	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+2832ec97-5cc9-4925-8c7c-1f7e16e4d477	1	Wash the vegetables. Heat around 1 litre of water in a kettle. Preheat oven to 200°C fan (220°C static oven).	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+a14638b4-1e43-4804-ab68-9afa2f1a9d91	2	Halve or quarter unpeeled potatoes and spread them on a baking sheet covered with baking paper. Mix with a little salt, pepper and olive oil. Bake on the middle shelf in the oven for 20-25 minutes.	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+8dbe8ba4-50f9-4d34-a47d-77acd1543306	3	Cut the stalk off the cauliflower. Put the entire head in a large saucepan and fill it with hot water so that the cauliflower is half covered. Add a little salt, put on the lid and simmer on medium heat for 12 - 15 min.	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+d875bc77-5fce-47e9-bb1b-150462da890d	4	Cut the chives into small rolls. Grate the zest of the lemon. Cut the leek into thin rings.	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+a1787852-a47a-4352-b68b-0bb2a64be624	5	Heat butter in a small saucepan over medium heat, add breadcrumbs, a little lemon zest and herbs. Squeeze the lemon juice, mix everything well and season with salt and pepper. Take the pot off the stove and set aside for a short time.	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+0b051fc3-c7d6-4e20-a1e4-37d1c7195485	6	Heat oil in a large pan over medium-high heat, braise leek rings in it for 2-3 minutes. Stir in sour cream and heat for approx. 1 min, add around 50ml of water and simmer for approx. 1 min. Season well.	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+f147ae69-70ed-488e-a6d2-be5b0376871a	7	Spread the leek and sour sauce on a large plate, carefully arrange the whole cauliflower on top and cover with the lemon crumbs. Sprinkle the grated cheddar over it, spread the potato wedges around it and enjoy.	55930764-1d55-4d28-9c03-4e27edf35c97	2020-04-21 16:01:02.641568+00	2020-04-21 16:01:02.641568+00
+33e55a34-03c5-4a1c-b8b3-664efa869616	1	Wash vegetables and herbs. Preheat oven to 230°C (static: 250°C).	7c732541-41eb-4e13-98d2-968afadedec8	2020-04-21 15:45:55.564776+00	2020-04-21 15:45:55.564776+00
+0259f53e-30ca-4f9a-afc9-4005ded3274b	1	Wash vegetables. Heat 800ml of water in a kettle.	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+fdb396c6-a622-440f-a5aa-c90ee50eea83	2	Halve the bell pepper , remove the core and cut the bell pepper halves into 0.5 cm strips. Peel the onion and cut it into fine cubes. Halve the courgette lengthways and cut diagonally into 0.5 cm thick half moons. Cut the dried tomatoes into strips.	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+2138082d-f658-404c-ae79-75aea12413d0	3	Prepare 800ml of stock using a stock cube and boiling water. Heat oil in a large saucepan over medium heat and sauté onion cubes for approx. 1 min.	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+065850b1-b95c-4253-9410-10a9b21fdd6f	4	Add risotto rice and sweat for approx. 1 min. Add ⅓ of the veg stock and the saffron threads and stir well. As soon as the liquid has been absorbed by the rice , add ⅓ to the broth again, stirring constantly. Stir the remaining broth into the risotto. Overall, the risotto should simmer for 20-25 minutes.	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+8dd98294-4f62-4573-8a88-0b95f8057b2e	5	Heat oil in a large frying pan. Add the bell pepper strips and sauté for 5 - 6 minutes. Remove from pan and set aside.	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+8c40ee5c-1cfc-45c8-bbf8-ad953c2a31c1	6	Wipe out the large pan with some kitchen paper and reheat oil over a medium heat. Add the courgette slices and fry for 3-5mins on each side (don't turn too quickly, they must be browned)	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+b4d0485a-92a1-43ef-9ff3-049103bf0e1c	7	Grate the parmesan. Stir in butter and ⅔ of the grated hard cheese into the risotto. Zest and juice the lemon. Season the risotto with salt and pepper. Add 1 teaspoon of lemon zest to the risotto along with around 2 tablespoons of lemon juice. Fold the bell pepper strips into the risotto.	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+b5987e86-05a2-4bd0-9281-8f826e84fded	8	Serve the risotto in bowls. Arrange the courgette on top, along with the sundried tomato and remaining parmesan.	748ba4b1-8cba-4d08-8a51-1a4a052abae8	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+86c14f03-f79f-4193-b97a-9768b453f221	1	Halve, peel and finely chop the red onion. Peel and grate the garlic (or use a garlic press). Roughly chop the coriander (stalks and all). Place the corn on the cob upright on a chopping board and cut vertically downwards to remove the kernels. Grate the cheddar cheese.	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 16:11:05.782071+00	2020-04-21 16:11:05.782071+00
+197c775c-014e-48f3-8b11-d1880c3f7d98	2	Heat a splash of oil in a frying pan on medium heat. Add three-quarters of the onion and cook until soft, 5 mins. Add the sweetcorn, stir and cook until piping hot, 3-4 mins. Add the garlic and the coriander stalks and cook for 1 minute more. Now, add the fajita seasoning and smoked paprika and cook until fragrant, 2 mins. TIP: If you're not keen on spice, don't add all the fajita seasoning!	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 16:12:01.283881+00	2020-04-21 16:12:01.283881+00
+6ca22f3a-1642-426f-b8ea-5593069ec93e	3	Taste your mixture and season with salt and pepper, remove from the heat. Drain and rinse the black beans in a colander and pop in a mixing bowl. Roughly mash the beans with a potato masher or fork, then stir in the sweetcorn mixture along with the cheese and half the coriander. Taste to check the seasoning and add more salt and pepper if needed.	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 16:12:01.283881+00	2020-04-21 16:12:01.283881+00
+fada0f3e-f092-4156-8d01-f5c2a673409d	4	To make the quesadillas, lay out the tortillas and divide the bean mixture evenly between them. Spread it out over half of each tortilla then fold the other half over to make semicircular 'sandwiches'. Set them aside for a minute whilst you get on with the tomato salsa and citrus sour cream!	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 16:12:01.283881+00	2020-04-21 16:12:01.283881+00
+259e7018-d315-4880-a296-fb44437292d0	5	Chop the tomato into 1cm chunks and finely slice the baby gem lettuce, then combine with the remaining coriander in a mixing bowl. Zest and juice the lime. Add half the lime juice and the olive oil (see ingredients for amount) and season well with salt and pepper. Put the sour cream in a small bowl and mix in the remaining lime juice. Season with salt and black pepper and add lime zest to taste.	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 16:12:01.283881+00	2020-04-21 16:12:01.283881+00
+0ca27ca6-ca28-48f6-8a53-31e5c8670ce8	6	Wash and dry your frying pan and put it back on medium heat with a drizzle of oil. Fry two quesadillas at a time until golden brown, about 4 mins per side. TIP: Keep them warm underneath some foil on a plate while you cook the rest. Serve with the tomato salsa and citrus sour cream and let everyone help themselves. Enjoy!	35989404-c9cc-486b-91c0-41a32e89a0b3	2020-04-21 16:12:01.283881+00	2020-04-21 16:12:01.283881+00
+012a41f7-bfbb-4dce-8c2b-8c3b31eb5721	1	Wash the vegetables. Heat plenty of water in a kettle. Preheat oven to 160°C fan (180°C static oven).	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 16:17:31.038537+00	2020-04-21 16:17:31.038537+00
+a310c55a-843f-4949-a472-a59d16247480	2	Fill a small saucepan with hot water and bring to a boil. Put the butter and chocolate in a small metal bowl and slowly melt over the water bath. Line a baking dish with baking paper. Grate the lemon zest. Roughly chop the almonds.	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 16:17:31.038537+00	2020-04-21 16:17:31.038537+00
+64b0f604-7f52-439e-acd4-2c89b38721fc	3	Pour black beans into a sieve and rinse with water. Add the beans to the chocolate and mix together with 1 pinch of salt, baking powder and 100g sugar. Add milk, mix in the flour and process everything briefly with a hand blender.	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 16:17:31.038537+00	2020-04-21 16:17:31.038537+00
+0d3333c0-18ad-4773-bb0b-f4a8db331396	4	Pour the brownie mixture into the baking dish, sprinkle with chopped almonds and bake on the middle shelf for 20-25 minutes.	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 16:17:31.038537+00	2020-04-21 16:17:31.038537+00
+096fb335-e227-4e10-b115-d69c22ad7899	5	Mix the sour cream in a small bowl with 2 tbsp sugar and grated lemon zest.	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 16:17:31.038537+00	2020-04-21 16:17:31.038537+00
+3262d95a-c3ff-4a45-87ce-05a90cd002f1	6	Halve peaches , remove seeds and cut peach halves into wedges. Heat some oil in a small frying pan, add peach slices and remaining sugar and let carmelize (around 3-5mins)	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 16:17:31.038537+00	2020-04-21 16:17:31.038537+00
+fd145e26-587e-4115-860d-8321d208c018	7	Remove brownies from oven, let cool for 10 mins. Then cut into slices and enjoy together with sour cream and caramelized peach slices.	58ae77ce-46f5-4cb4-b1b8-65485579533c	2020-04-21 16:17:31.038537+00	2020-04-21 16:17:31.038537+00
+41fac6f6-5d12-4987-8cd5-cfda77bc74e3	1	Wash the vegetables. Preheat oven to 200°C fan (220°C static).	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 16:31:07.625545+00	2020-04-21 16:31:07.625545+00
+8ca6d566-850d-4501-b246-aba55a78cc52	2	Chop courgette into 1.5cm cubes. Peel and chop the red onion. Slice the pepper in half, de-seed and remove flesh and cut into bite-sized pieces. Put veg in lined baking dish, sprinkle half of the feta over and season well. Bake in the oven for approx. 20 minutes.	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 16:31:07.625545+00	2020-04-21 16:31:07.625545+00
+0d12e16e-afab-4a72-87c0-a9ec40871f5a	3	Peel the garlic and press into a small bowl. Finely chop the dill and parsley . Mix together smoothly with half of the yogurt in the bowl. Season well	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 16:31:07.625545+00	2020-04-21 16:31:07.625545+00
+78deeb05-6089-40c6-b48c-881e765c74ba	4	Crush remaining feta in a bowl with a fork. Add tomato puree and mix. Mix with the rest of the yogurt to a smooth cream. Season well	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 16:31:07.625545+00	2020-04-21 16:31:07.625545+00
+8f5b768e-6714-438e-83ff-1c4bf44bfa2d	5	Cut the cucumber and tomato into thin slices. In the last 10 minutes of the cooking time of the oven vegetables, put the flatbread on a baking sheet covered with baking paper and warm up in the oven.	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 16:32:36.632062+00	2020-04-21 16:32:36.632062+00
+1555add2-0a5b-4f67-9878-97d8680bc9e4	6	Quarter the flatbread , cut it open and spread it with the tomato paste and the yoghurt dip. Add the salad, tomato and cucumber and finally add the oven vegetables. Enjoy.	385aaaea-d972-48cc-b873-772ada74c644	2020-04-21 16:32:36.632062+00	2020-04-21 16:32:36.632062+00
+9799c612-a0ab-452b-bc87-16527de9a55f	1	Wash the vegetables. Preheat oven to 180°C fan (200°C static). Add olive oil to a roasting tin and put in oven to heat	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 16:37:02.644548+00	2020-04-21 16:37:02.644548+00
+7fc7fa37-09af-4c37-baf2-e419ce2b8466	2	Chop the vegetables into small chunks and spread out in the tin, adding the salt and pepper before giving everything a shake to coat. Roast for 30 mins.	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 16:37:02.644548+00	2020-04-21 16:37:02.644548+00
+c4b54b83-ea40-4388-80aa-cce43c6a3272	3	Meanwhile, add olive oil to a shallow casserole dish or large frying pan, on a low-medium heat. Sauté the onion for a few minutes before adding the minced garlic and cooking for another minute.	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 16:37:02.644548+00	2020-04-21 16:37:02.644548+00
+1ac9f6e1-c0ad-4265-ab05-1324ef6f6b6e	4	Stir 1 tbsp balsamic vinegar with rice and stir into pan for approx 30 seconds, to coat it in the oil. Pour in the passata and vegetable stock, a little at a time, alternating between the two. Allow each amount to be absorbed by the rice before adding the next.	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 16:37:02.644548+00	2020-04-21 16:37:02.644548+00
+9732e066-4202-47a7-863c-839f8aac258a	5	After 20 minutes, add in the sundried tomatoes and the roasted vegetables. Give everything a stir, adding more liquid if needed, and cook for a further 5 minutes until everything is cooked through and the rice is done.	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 16:37:02.644548+00	2020-04-21 16:37:02.644548+00
+97afc7ef-6b71-4394-9715-61efd4c15963	6	Remove from the heat and stir in the basil, salt and pepper and vegan cheese (if using). Feel free to stir in any extra oil or dairy-free butter at this point for an extra creamy risotto.	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 16:37:02.644548+00	2020-04-21 16:37:02.644548+00
+49959d82-6366-4978-b70d-d78af21743c0	7	Serve right away and enjoy!	bab60370-f2fd-45dc-b2b0-fca515fbbe3e	2020-04-21 16:37:02.644548+00	2020-04-21 16:37:02.644548+00
+6b35dc03-c373-4104-8cfd-99230034a81f	1	Preheat oven to 200°C (static: 220°C).	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+65c1ade6-e5b9-44c3-957c-a14f37ff3e2e	2	In a small bowl, stir together the Panko, melted butter, Italian seasoning and 1.5g (1/4 tsp.) salt until combined.  Set aside.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+3532c7f7-b0c8-4b41-9326-dc1d39dd762c	3	Peel, de-seed and dice the butternut squash into 1.5cm cubes, peel 3 garlic cloves and place both into a large mixing bowl with some olive oil until evenly coated.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+5da461fa-b0d9-44d5-ba45-259aecbefdb5	4	Remove the 3 garlic cloves from the bowl, and wrap them in some tinfoil to form a pouch.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+cde29208-bb95-40b7-a8e1-47aa8fa0529b	5	Spread the butternut squash out on a baking tray (you can line it with foil or baking paper if you wish) and season generously with a few pinches of salt and pepper.  	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+ebdff669-ba17-42c2-8b48-d3f1cab1dcaf	6	Put the garlic clove pouch (from step 4) on the baking tray next to the butternut squash. 	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+9061dfee-5e5e-41de-a7b3-32d06a372d46	7	Bake for 20 minutes, or until the butternut squash mash easily with a fork and the garlic is soft and fragrant.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+78c3356b-8fdd-4447-b981-86a4f3f5cd3a	8	In the meantime, bring a large pot of salted water to a boil over high heat. Add the pasta and cook al dente (or slightly undercooked) according to package instructions. Drain.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+fb3e719b-8608-4196-8055-f1cbe71a4825	9	Make the Alfredo sauce by heating some olive oil in a large frying over medium-high heat. Make 250ml vegetable stock in a jug.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+d189ac68-c058-48c1-b86f-83731ede2793	10	Mince or press 2 garlic cloves to the pan and sauté for one minute, stirring occasionally, until fragrant.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+642a49b4-e402-4db0-85ad-36ec6fd2b686	11	Sprinkle the pan with 24g (3 Tbsp) of flour, and stir to combine. Sauté for an additional minute to cook the flour, stirring occasionally.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+1e1a3594-97ca-415f-85f6-ea10b1340ac6	12	Add the vegetable stock to the frying pan whisking to combine until smooth. 	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+c467064a-66c2-4883-9f65-c1c7a77cddba	13	Whisk in 250ml milk and a teaspoon of dried sage, and bring the mixture to a simmer. Allow to cook for another minute until slightly thickened.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+a1ce1ccd-b71f-4589-a907-651171ecbbbc	14	Grate 115g Parmesan cheese and add to frying pan. Season with salt and pepper and stir until the cheese melted.  Reduce heat to low and simmer until ready to use.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+7596b78b-1674-47f5-84bf-a170464a56ea	15	Once cooked, put both the butternut squash and garlic back into the large mixing bowl along with ~250ml of the sauce and mash together until smooth.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+5d2ef310-2b32-4a83-9746-27fc96af513b	16	In a medium baking dish (I use the glass dish), spread out ~125ml of the reaming sauce in a layer. Place the pasta shells in the dish in an even layer (if you’re feeling patient you can stuff them with the butternut filling), then top with the butternut filling. 	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+5de0ea6e-481d-4baf-89c2-98e52955d185	17	Spoon the remaining alfredo sauce evenly on top.  (Optional: if using the mozzarella, sprinkle it on top of the alfredo sauce.)  Then sprinkle the Panko mixture evenly over the top of everything.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+a66d5757-97cc-46bf-a48f-6825370841c4	18	Bake uncovered for 15 minutes, or until the Panko mixture is crispy and starts to turn slightly golden.  Remove and serve immediately.	d05b2081-7ad8-417a-ba30-bb9e8171f156	2020-04-21 16:40:34.158547+00	2020-04-21 16:40:34.158547+00
+26079f44-9112-442f-a306-c476760c847c	1	Heat 1tbsp sunflower oil in large saucepan on a medium heat. Add the onion and carrots until the onions are soft and starting to caramelise, about 8mins.	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:41:35.384018+00	2020-04-21 16:41:35.384018+00
+494e6d71-a426-44db-b6af-eb6510de942b	2	Add garlic and ginger, sizzle for another 30 secs, then stir in spices. Add 2 tbsp flour and cook for 1 min.	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:41:35.384018+00	2020-04-21 16:41:35.384018+00
+dabb6312-82f9-41cb-949e-a8373e809ce3	3	Add 450ml boiling water to a vegetable stock cube in a jug. Add to the pan gradually, stirring to prevent lumps.	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:41:35.384018+00	2020-04-21 16:41:35.384018+00
+8c0612e1-7a9a-4ce7-b59a-7c8a8accb186	4	Stir in the soy sauce and honey. Bring to the boil then simmer for 10-15mins to reduce until thickened. If you want a smoother sauce you can blitz it in a blender.	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:41:35.384018+00	2020-04-21 16:41:35.384018+00
+801d0534-889f-474a-9c25-9bf1cb4d2dfb	5	Whilst the sauce is simmering, make the rice according to the packet instructions. Then make the veggies.	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:41:35.384018+00	2020-04-21 16:41:35.384018+00
+3f6c5a04-e37b-4b62-978d-d00aef9074d0	6	Slice the pumpkin/sweet potato into 1cm circles/crescent moon shapes	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:43:34.618997+00	2020-04-21 16:43:34.618997+00
+f008d4a6-9100-4dfc-97a0-9367e2a35475	7	Put breadcrumbs, flour and eggs into 3 separate bowls. Dip all the veg in the flour, followed by the eggs and then the breadcrumbs to coat evenly. Put in oven for 10-15mins	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:43:34.618997+00	2020-04-21 16:43:34.618997+00
+f87c9e41-5e4b-494d-9af0-782bffa9cc25	8	Heat oil in a large frying pan over a medium heat. Shallow fry vegetables in batches for 1-2mins per side, scooping out when golden and draining on kitchen roll.	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:43:34.618997+00	2020-04-21 16:43:34.618997+00
+7fa4e98b-ed69-4968-a38a-b989ed3c6c3e	9	Finally pour the katsu sauce over the veg and serve with rice.	24a8af08-7f72-4a80-8510-12b9d90535f1	2020-04-21 16:43:34.618997+00	2020-04-21 16:43:34.618997+00
+06a02e7d-79fa-4e9d-8af5-ba015a4ceb85	1	Preheat oven to 200°C (static: 220°C).	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-21 16:48:00.835826+00	2020-04-21 16:48:00.835826+00
+5775e2dc-fa06-4bcf-adb5-461608d6ca88	2	Combine spicy potatoes and chickpeas in a medium bowl and mix well. Transfer to a sheet pan lined with parchment paper.	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-21 16:48:00.835826+00	2020-04-21 16:48:00.835826+00
+e5bb7084-4203-4fb9-8d31-c2ffc7811b17	3	In the same bowl used in step 2, combine the carrots, olive oil, garlic powder, turmeric, paprika, maple syrup, and salt. Mix well and transfer to the sheet pan from the previous step.	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-21 16:48:00.835826+00	2020-04-21 16:48:00.835826+00
+6791e925-8d04-415a-a335-06b8ca3d01b0	4	Using the same bowl, combine the courgette, olive oil, and a sprinkle of salt and pepper, mix well. Transfer to the sheet pan.	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-21 16:48:00.835826+00	2020-04-21 16:48:00.835826+00
+a6852a6e-c141-479b-b665-c1f9fc0e7465	5	Bake everything for 15 minutes. Flip/stir everything and bake for another 15-20 minutes, until potatoes are tender and chickpeas are crisp. Add cherry tomatoes about 10 mins before the end of roasting time.	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-21 16:48:00.835826+00	2020-04-21 16:48:00.835826+00
+5e076071-1a01-496f-8dd8-50ae28cdf29a	6	Add 1/2 of the roasted potatoes, 1/2 of the carrots, and 1/2 of the courgette to each bowl. Top with chickpeas and 50g crumbled feta.	f6c686e3-931b-4775-b455-1c8656066cb7	2020-04-21 16:48:00.835826+00	2020-04-21 16:48:00.835826+00
+dc834f5a-4fbf-4cbc-a85f-a9ce5f9837ed	1	Preheat oven to 180°C (static: 200°C). Put the lentils into a bowl. Cover with water and set aside to soak.	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+acf6d9f2-e451-4625-8e50-4d0d8b50c603	2	Peel the potatoes, chop into slices around 1cm thick, then add to a saucepan, cover with water and bring to the boil. Turn the heat down and simmer for 15–18 minutes until just tender.	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+adbeb319-be81-49c8-8127-0db1b4f3534b	3	Heat the oil in a large sauté pan, add the onions and cook over a medium heat for 5–6 minutes until just softening.	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+67d0654a-0721-45c2-896e-3149f67fd06a	4	Add the garlic, thyme, oregano and cinnamon and cook for 1 minute, stir in the tomato purée and cook for a further minute.	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+2d1b5d6f-c8e3-4832-9151-ed8a8ac7741d	5	Add the tomatoes, salt and pepper and bring to a simmer. Fill the tomato tin with water and add to the pan. Do this another two times and add the stock cube (this should be 800ml of water in total).	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+6f269833-af53-4645-8def-be1f3fb12ad4	6	Drain the lentils and stir into the tomato sauce, bring to the boil and simmer over a medium heat, stirring occasionally, for 20 minutes until the lentils are soft and the liquid nearly all absorbed.	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+68579c4b-b976-499f-8bcf-bae0e44df222	7	Spoon half the lentil sauce into a medium ovenproof dish then layer half the potatoes and aubergines over the top. Top with the remaining lentils, potatoes and aubergines.	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+bdde1360-867a-464e-a2af-a6a90be4ac19	8	Put the ricotta into a small bowl and stir in the grated cheese. Spoon the mixture over the aubergines and smooth out to cover the top.	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+4443f9cd-d7ca-47e2-98be-11d8983e0e42	9	Bake in the oven for 20–25 minutes, or until heated through and golden brown. Serve immediately	81f6611c-75f0-4690-97a1-b71cc88d7f3a	2020-04-21 16:50:59.559114+00	2020-04-21 16:50:59.559114+00
+2d64a2b9-5565-400e-beb2-d2e76535dd3e	1	Wash all the vegetables. Thinly chop the carrot, peppers and spring onions and shred the Chinese cabbage.	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 16:54:33.283992+00	2020-04-21 16:54:33.283992+00
+e6e63072-bb32-4758-9aa2-a782c9b39b0a	2	If using dried noodle nests, add to a pan of boiling water for the required cooking time. If using ready to eat noodles; place in a bowl, pour boiling water over them, and drain.	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 16:54:33.283992+00	2020-04-21 16:54:33.283992+00
+d6a93514-269c-4b88-8523-2e79d0135557	3	Meanwhile mix creamed coconut, chili sauce, soy sauce, peanut butter and sesame oil in a bowl to make a smooth satay sauce.	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 16:54:33.283992+00	2020-04-21 16:54:33.283992+00
+3b1b9145-016b-4acf-9a86-0d5f5bfae226	4	Heat the peanut/vegetable oil in a wok. Grate the ginger, press the garlic, and finely chop the chillies and add to the pan. Fry for a minute before adding the harder pieces of stir fry vegetables, such as the carrots and peppers. 	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 16:54:33.283992+00	2020-04-21 16:54:33.283992+00
+7b286c5c-b63c-4448-97a5-0fb1915e36aa	5	After a couple of minutes add the noodles and the rest of the vegetables and continue to fry for another couple of minutes.	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 16:54:33.283992+00	2020-04-21 16:54:33.283992+00
+f67a8ec6-8d2b-4129-9d31-6be5bb8c4394	6	Move the stir fry to the side of the wok to create a space in the centre. Pour the sauce into this space and bring to the boil before mixing with the stir fry to coat.	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 16:54:33.283992+00	2020-04-21 16:54:33.283992+00
+9e8c988e-3b6a-430a-9b06-8c20246eb8ca	7	Serve in bowls, garnish with basil leaves and roasted peanuts	05f5e4ce-ebcb-4edd-938b-cfc6c4c44cb1	2020-04-21 16:54:33.283992+00	2020-04-21 16:54:33.283992+00
+6a11e91e-984e-482b-9a2b-e3713ea31d07	1	Cook the pasta, adding the broccoli for the final 4-5 mins and cooking until tender. Drain well. Pre-heat the grill. 	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+697f329b-fe36-40ef-bd11-f07db7a58dd4	2	Make the sauce: heat the butter in a saucepan and stir in the flour. Cook for 1 min, then gradually add the milk, stirring well between each addition.	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+3beaf27a-da07-4ac4-af48-2518b24cc442	3	Add the garlic to the sauce. Bring to the boil, stirring, then simmer for 2 mins, before stirring in the mustard, half the cheese, plus the nutmeg, chili flakes and spicy chili sauce. Season well.	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+2da554d4-1b14-49db-a0fd-3608b91fbf69	4	Mix the pasta and broccoli into the sauce and spoon into an ovenproof dish. Scatter over the remaining cheese and breadcrumbs and place under a hot grill for 3-4 mins until golden and bubbling. If using, add the chopped walnuts (don't do this before the grill as they'll burn)	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+9174c5b7-e433-42ba-8f62-037944f1e73c	5	Serve in bowls. Nom nom.	043244fe-d09c-4c5d-9ae3-462e9c0f7810	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+afb31bbd-1a4c-4bb9-ba84-db1fc3c6ea14	1	Preheat oven to 190°C (static: 210°C). Lightly oil a baking sheet.	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+2df234da-257c-41dc-abfd-5a03cf59aca7	2	In a medium bowl, mash black beans with a fork until thick and pasty. In a food processor, finely chop bell pepper, onion, and garlic. Then stir into mashed beans.	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+ebf549f1-c159-48ec-8062-920fa1fc9028	3	In a small bowl, stir together egg, chili powder, cumin, and chili sauce.	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+e61868b2-e77c-4561-a0f3-7cab04a03245	4	Stir the egg mixture into the mashed beans. Mix in bread crumbs until the mixture is sticky and holds together. Divide mixture into four patties.	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+2eda4de6-6c89-41d3-a41a-c23c08ac8ca8	5	Place patties on baking sheet, and bake about 10 minutes on each side	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+f11cb132-c531-4f11-a370-a11e31e53bbb	6	Grill the burger buns, add cheese and allow to melt under the grill. Then add onion, tomato, lettuce. Serve with wedges or chips.	03d187d2-bda8-4bdd-9a98-9ac9641811fd	2020-04-21 16:59:00.521365+00	2020-04-21 16:59:00.521365+00
+a50ecf0d-729a-444d-b031-e735c2494237	1	Wash vegetables. Peel and roughly chop garlic, chop broccoli and cauliflower into florets. Slice carrots and bell pepper. Peel and roughly slice shallot.	b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2020-04-21 17:03:02.048198+00	2020-04-21 17:03:02.048198+00
+41f2e31e-18da-4ce4-a712-a52140057266	2	Heat vegetable and chili oil together in a wok over medium heat, add chopped garlic and stir until golden brown. Add broccoli and cauliflower florets, sliced shallots and 3 tablespoons of water. aute until tender, about 2 minutes.	b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2020-04-21 17:03:02.048198+00	2020-04-21 17:03:02.048198+00
+84079509-5f96-447e-bc37-8cdfcbf0346a	3	Stir in other ingredients. Stir fry until just cooked but still crispy. 	b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2020-04-21 17:03:02.048198+00	2020-04-21 17:03:02.048198+00
+711b6cb5-0402-4f72-bc76-6c3387d5ded9	4	Transfer to serving plate, sprinkle with Thai pepper powder. Serve with steamed Thai jasmine rice.	b54bfb64-3718-40a5-b03c-734bbfa0cd4d	2020-04-21 17:03:02.048198+00	2020-04-21 17:03:02.048198+00
+6f27b84e-d64e-4b06-a4b9-75a19a0ba705	2	Heat a splash of oil in a large saucepan on medium-low heat. Add the onion and slowly cook for 5 mins, then add the garlic and cook for one minute more. Season with a pinch of salt and a few grinds of black pepper. TIP: If the onion starts to brown turn the heat down a bit. Once the onion is soft, add the curry powder and mix with a wooden spoon.	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-21 17:04:17.569+00	2020-04-21 17:04:17.569+00
+ba23e559-cd9c-4b61-ab01-87a67dea43fc	3	Stir in the tomato purée and then add the diced tomatoes. Season with another pinch of salt and a sprinkling of sugar (if you have some). Add the red lentils, the water (amount specified in the ingredient list) and the vegetable stock pot. Stir to dissolve the stock pot. Bring to a gentle simmer, put a lid on and leave for 5 mins.	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-21 17:04:17.569+00	2020-04-21 17:04:17.569+00
+12c0ca71-888d-46ef-8d6b-614f52a580c8	4	Remove the lid and add the cauliflower. Cook until tender, 12-15 mins.	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-21 17:04:17.569+00	2020-04-21 17:04:17.569+00
+47769031-05bc-4343-a1f0-58f4178abd3e	5	When the cauliflower is halfway through cooking add the green beans and cook for 6-7 mins. TIP: Don’t worry if the dal is drying out a little – just add a bit more water to get a looser consistency.	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-21 17:04:17.569+00	2020-04-21 17:04:17.569+00
+45d94a3f-ed83-4858-948f-1b110af71480	6	Stir through most of the coriander and some of the yoghurt. TIP: At this stage it’s crucial to taste for seasoning - have a spoonful and add more salt and pepper to lift the flavours to their max! Serve the dal in a bowl with a dollop of Greek yoghurt and add the remaining coriander sprinkled on top. Enjoy!	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-21 17:04:17.569+00	2020-04-21 17:04:17.569+00
+8ad61d09-3023-44d3-b1a8-7c2539e5ce3f	1	Slice aubergine into 1/2-inch thick rounds. Sprinkle each round with a pinch of salt, then place in a colander in the sink or on a few paper towels for 30 mins. Rinse the salt off with water, then proceed with the recipe.	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 17:09:22.46144+00	2020-04-21 17:09:22.46144+00
+30da3ee3-47f4-4875-8229-55dec55ec8cf	2	Preheat oven to 200°C (static: 220°C). Prepare two baking sheets with parchment paper, and set aside.	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 17:09:22.46144+00	2020-04-21 17:09:22.46144+00
+1f3d7b89-9a0d-4c88-9292-ae7c71181077	3	In a shallow bowl, whisk together Panko breadcrumbs, Italian seasoning and 1 teaspoon salt until combined.  In a separate bowl, whisk the eggs until smooth. 	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 17:09:22.46144+00	2020-04-21 17:09:22.46144+00
+67bfcfc0-27df-43f4-b375-1270bd3b51df	4	Dip an aubergine round on both sides in the whisked egg mixture, then immediately dip it in the breadcrumb mixture until the aubergine is completely coated, then set on a parchment-covered baking sheet.  Repeat with the remaining aubergine rounds until they are all evenly spaced on the baking sheets.  Bake for 20 minutes, flipping once halfway through, until the breadcrumbs are toasted and slightly golden.  Remove from the oven and set aside.	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 17:09:22.46144+00	2020-04-21 17:09:22.46144+00
+0ec6e1c2-b9ec-4d1b-82da-8056333e27a6	5	Spread 1/2 cup tomato sauce evenly over the bottom of an 11 x 8-inch baking dish.  Place half of the aubergine in an even layer along the bottom of the baking dish.  Spread an additional 1 cup of tomato sauce evenly over the aubergine. 	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 17:09:22.46144+00	2020-04-21 17:09:22.46144+00
+9d521f7c-4762-4829-9a66-92efc6767599	6	Then sprinkle 1 cup Mozzarella cheese evenly over the sauce, followed by 1/3 cup Parmesan cheese, followed by 1/4 cup of the fresh basil.  Repeat with another layer of the remaining aubergine, then tomato sauce, then Mozzarella, then Parmesan cheese.	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 17:09:22.46144+00	2020-04-21 17:09:22.46144+00
+2b8c7d77-8ea0-4031-a0b6-c548add75225	7	Bake for 15-20 minutes until the cheese is melted and starts to turn slightly golden around the edges, and the sauce is bubbly.  Remove and sprinkle with the remaining basil. Serve immediately.	cb1c91bb-2221-4c2c-babe-7d0f1ce5ea6d	2020-04-21 17:09:22.46144+00	2020-04-21 17:09:22.46144+00
+6d87395c-df92-4fb6-8417-3a1742d5120b	1	Combine chickpeas, coconut milk, coconut oil, peanut butter, red curry paste, mustard, ginger, garlic, lime, salt and pepper in a food processor or blender, and puree until smooth, stopping to scrape the sides once or twice if needed.  For a thinner sauce, add a tablespoon or two of extra coconut milk (or water). Taste, and season with extra salt and pepper (and feel free to add in extra curry paste) if needed.  Set aside.	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-21 17:13:07.50159+00	2020-04-21 17:13:07.50159+00
+7e6d2ca1-95be-455d-a1cf-b9db3f853ef0	2	Spiralize, julienne or shave the courgette into thin strips with a vegetable peeler.  Press with a paper towel to remove excess water.	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-21 17:13:07.50159+00	2020-04-21 17:13:07.50159+00
+da726c11-8e54-4c51-9650-50c2309f7c12	3	Heat oil in a large skillet or wok over medium-high heat.  Add the courgette noodles and drizzle evenly with the tamari (or soy sauce).  Sauté for 2 to 3 minutes, tossing occasionally, until they are soft but not mushy.  Remove from heat, add the satay sauce, and toss until combined.	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-21 17:13:07.50159+00	2020-04-21 17:13:07.50159+00
+a7bba059-4e01-44ae-a7bd-7f4f140beb2e	4	Serve immediately, garnished with your desired toppings.	2f1dcdb9-af54-42fc-b04f-19ef0c07a2ac	2020-04-21 17:13:07.50159+00	2020-04-21 17:13:07.50159+00
+8be2fe96-ad83-4cd5-b306-364685ec031d	1	Preheat the oven to 200°C (static: 220°C). Deseed the red pepper and cut into bite-sized pieces.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:13:07.50159+00	2020-04-21 17:13:07.50159+00
+c6e952ea-688a-42b9-8e09-b8f29eaa9cf3	2	Cut the aubergine and courgette into bite-sized pieces. Peel and finely chop (or grate) the garlic.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:13:07.50159+00	2020-04-21 17:13:07.50159+00
+6c3d4654-211b-41d9-bb9c-759dc93e783b	3	Heat a large frying pan or wok with a drizzle of olive oil over a medium-high heat. Add the red pepper, aubergine and courgette with a large pinch of salt and cook for 8-10 min or until the vegetables are starting to brown slightly and caramelise.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+8a523232-97c4-439b-b069-98349aabda9c	4	Boil 100ml of water in a kettle.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+62935da8-6a5f-4e52-8b7c-1b2c243fc661	5	While the vegetables are cooking, melt 30g butter in a pot over a medium heat. Once melted, add 30g flour and stir with a wooden spoon for 1-2 min or until a sandy paste forms – this is your roux.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+c06ff58e-b53c-4f53-a28e-0716219e96e4	6	Whisk 350ml milk gradually into the roux and cook for 5 min until a smooth, thick sauce remains.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+bf7b2e5f-33a9-4b0b-890b-8e489c36cf4d	7	Grate the cheddar. Once the sauce has thickened, remove from the heat, season with salt and pepper and stir through the grated cheddar – this is your cheese sauce.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+f234f8d4-03d5-4b95-9fe9-c287bfbd43e3	8	Once the vegetables have caramelised, add the chopped garlic, tomato paste, 1 tsp sugar, chopped tomatoes and 100ml boiled water to the pan. Cook for 3-4 min or until thickened to a pasta sauce consistency – this is your vegetable sauce. Chop the basil stalks (save the leaves for later!) and add them to the pan.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+2c6216cc-ee40-4c20-876d-665ade4b4137	9	Layer some of the vegetable sauce over the bottom of an oven-proof dish, then top with 3 lasagne sheets. Repeat this process until you end up with a final layer of lasagne sheets.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+0ed543d6-50bc-4343-ac35-ee6806c36c52	10	Finally top with the cheese sauce, making sure all of the lasagne is covered. Grate the Italian hard cheese. Sprinkle the grated Italian hard cheese directly over the cheese sauce and put the dish in the oven for 30-35 min or until the lasagne is cooked.	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+e752b7d1-9ad5-4463-bdab-3deebe9eb047	11	Allow the lasagne to cool slightly before serving. Chop the basil leaves and use these to garnish your lasagne. Serve and enjoy!	ff6ed33c-31f0-4037-a1c8-aa1d9d7add0d	2020-04-21 17:17:29.117556+00	2020-04-21 17:17:29.117556+00
+c36a39c7-5791-4c82-8b28-2547a783a894	1	Heat 1 tbsp sesame oil in a wide-based pan with a tight-fitting lid. Add 1 finely chopped red onion and cook over a low heat for 10 mins, stirring occasionally, until softened.	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 17:19:47.253685+00	2020-04-21 17:19:47.253685+00
+c2835a61-91af-4640-bbfc-643c1b117eeb	2	Add 1 crushed garlic clove, a finely chopped thumb-sized piece of ginger and 1 finely chopped red chilli, cook for 1 min, then add 1 ½ tsp ground turmeric and 1 ½ tsp ground cumin and cook for 1 min more.	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 17:19:47.253685+00	2020-04-21 17:19:47.253685+00
+47f842fb-8384-4486-a396-430a791af1f9	3	Turn up the heat to medium, add 2 sweet potatoes, cut into even chunks, and stir everything together so the potato is coated in the spice mixture.	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 17:19:47.253685+00	2020-04-21 17:19:47.253685+00
+93c5d015-2978-4ad9-a586-c520d9fb1686	4	Tip in 250g red split lentils, 600ml vegetable stock and some seasoning. 	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 17:19:47.253685+00	2020-04-21 17:19:47.253685+00
+2e9934ab-aa4f-48a4-aea1-7d6d0d1a4b52	5	Bring the liquid to the boil, then reduce the heat, cover and cook for 20 mins until the lentils are tender and the potato is just holding its shape.	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 17:19:47.253685+00	2020-04-21 17:19:47.253685+00
+b8ca11ed-396c-4ea0-b7fb-79064f1a5ab1	6	Taste and adjust the seasoning, then gently stir in the 80g spinach. Once wilted, top with the 4 diagonally sliced spring onions and ½ small pack torn basil leaves to serve.	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 17:19:47.253685+00	2020-04-21 17:19:47.253685+00
+cdd42e87-a283-4af2-8c33-045aa5acdc4a	7	Alternatively, allow to cool completely, then divide between airtight containers and store in the fridge for a healthy lunchbox.	73896303-5e9e-47b0-8423-45eb2b8ef2ad	2020-04-21 17:19:47.253685+00	2020-04-21 17:19:47.253685+00
+fdbb941a-99c5-4fe3-aec2-ee1f44c18378	1	Halve, peel and finely chop the onion. Peel and grate the garlic (or use a garlic press). Cut the cauliflower into bite-sized florets. Roughly chop the coriander. Trim the tops from the green beans and chop them into thirds.	64e984aa-ef1b-4b1c-aa1e-4c3d09a1bcbe	2020-04-21 17:04:17.569+00	2020-04-21 17:04:17.569+00
+13578e58-942a-410f-a2b6-1c3c05a6a634	1	Preheat oven to 230°C (static: 250°C). Stir the oil, garlic, salt, cumin, paprika, and cayenne together in a small bowl. Transfer 2 teaspoons of it to a large bowl and set both aside.	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-21 17:21:03.023116+00	2020-04-21 17:21:03.023116+00
+267c9f3c-1af5-4380-ac7a-6e1ab1672c5a	2	eel the sweet potato and cut it in half crosswise. Cut the pieces lengthwise into 1/2-inch-wide slices. Cut the slices lengthwise into 1/2-inch-wide planks or batons (they should look a bit like steak fries). Place the planks in the large bowl and toss to coat in the spiced oil. Transfer to a rimmed baking sheet and spread into an even layer (save the bowl; no need to wash it). Roast on the middle rack for 10 minutes. Meanwhile, prep the tortillas and vegetables.	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+37e91391-d16f-4280-9e34-c053a920cfa0	3	Stack the tortillas on a large sheet of aluminum foil and wrap completely in the foil; set aside. Core, seed, thinly slice the bell peppers, and add to the now-empty sweet potato bowl. Thinly slice the onion and add to the bowl. Drizzle with the reserved remaining spiced oil and toss to combine.	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+3f0a371a-6175-419d-a13b-2c8d74fd844a	4	Carefully remove the hot baking sheet from the oven, flip the sweet potatoes, and then push them to one half of the baking sheet. Add the bell peppers and onions to the other half of the baking sheet and spread into an even layer. Place the baking sheet back on the middle rack and place the foil-wrapped tortillas on the lower rack. Roast until sweet potatoes are tender, 12 to 15 minutes more. Meanwhile, make the crema.	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+0b8b7741-0f88-489a-a7b6-597caf0d9d59	5	Make the crema: Place the sour cream, lime zest, and 2 teaspoons of the lime juice in a small bowl, season with salt, and stir to combine.	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+0491a3f9-28d3-4024-bc30-6c3d925b705c	6	When the vegetables are ready, drizzle with the remaining lime juice, toss to combine, and transfer to a serving bowl. Serve with the warmed tortillas, lime crema, and toppings.	b84f2a90-0df5-490c-8d12-c9f2dddb04a4	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+7d624faa-0735-45c5-9229-213cfafb9042	1	For the salsa: De-seed and chop the tomatoes, peel and crush the garlic, peel and finely shop a small onion, de-seed and finely chop ¼ fresh green chilli and finely chop 1 tbsp fresh coriander.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+316d971f-ec33-4430-8acf-52edf3bb973f	2	Mix the tomatoes, garlic, onion, chilli and coriander together and leave for about 30 minutes at room temperature to allow the depth of flavour to develop.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+9157edfa-b8e3-4725-b209-8edb241a76cd	3	To make the guacamole: Peel and stone 2 avocados. Slice and juice 1 lime. Mash the avocados with the lime juice together in a bowl. Season well.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+b2a9454a-813b-40ae-ae13-7ae03509541f	4	Add the garlic, onion, tomato, chilli and coriander and mix thoroughly to combine.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+86e9a515-28d4-4f01-95fc-6624e133c144	5	Slice a courgette into four slices lengthways. Seed and quarter a red pepper and yellow pepper lengthways. 	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+4faf9165-ce58-4cfa-8a8a-471381ab76a5	6	To make the quesadillas, heat a chargrill pan over a medium to high heat, add the courgette slices and peppers and grill for 10-15 minutes or until softened and chargrilled in places. Remove the griddled vegetables from the pan and cut into strips.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+53b9601f-53ee-461a-8793-73306dc69b69	7	Spread one tablespoon each of guacamole and salsa onto four tortillas.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+6506407b-6b2e-4ecb-8363-c87c83785fc0	8	Divide the vegetables between the four tortillas. Wrap them up and return them to the chargrill pan for one minute on each side.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+c82d662e-c3cd-474a-81b6-59aa7a110fa4	9	Open the quesadilla slightly to serve, garnished with coriander leaves and wedge of lime.	612101a3-bfe9-4a8a-8274-d1e4ebd3b256	2020-04-21 17:26:41.005618+00	2020-04-21 17:26:41.005618+00
+5d43d19c-8396-4239-bb11-eb09f20548d4	1	Put the sugar, flour, cocoa, salt, and any of the extras you want into a mug. Stir well.	4adcf298-afb7-4ca1-ab87-3a99a92d99cf	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+d71202a7-dbb0-46c4-8d1f-fc7b7f5270e6	2	Add the oil and water. Stir! stir! stir around until it looks well-mixed. It shouldn't be too gloopy, but if it is, add a little more flour.	4adcf298-afb7-4ca1-ab87-3a99a92d99cf	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+8eb5c1fa-dafb-446f-b18a-8445b67187fb	3	Place the mug carefully into the microwave. Cook for 2 minutes. Keep an eye on the microwave though, to make sure it is rising well and doesn't look or smell burnt (remember: microwaves can vary!).	4adcf298-afb7-4ca1-ab87-3a99a92d99cf	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+d3ba11eb-3894-40ec-8e4b-ee292155fc60	4	When cooked, lift it out of the microwave. Just make sure not to burn yourself in the process.	4adcf298-afb7-4ca1-ab87-3a99a92d99cf	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+6abcd06b-ce63-46b1-889b-b63ee6f585a3	5	Add your ice cream, cream, or whatever you like with cake! Enjoy!	4adcf298-afb7-4ca1-ab87-3a99a92d99cf	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+f5882e80-b4de-4ff7-bca7-5fdf5a6437d0	1	Pre-heat oven to 170°C (static: 190°C)	48cf280e-9329-4c39-a7de-b49350de47b5	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+85701f14-0956-4c2c-9c46-fe9a0f410134	2	Chop rhubarb into 2-3cm pieces. Peel and chop apples. Place onto ovenproof casserole dish along with sugar and water.	48cf280e-9329-4c39-a7de-b49350de47b5	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+208333b0-6e11-4e98-b605-c701a6416d4f	3	Pulse self-raising flour, brown sugar, oats and butter in a blender or food processor until mixture resembles breadcrumbs.	48cf280e-9329-4c39-a7de-b49350de47b5	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+4d43d1a1-92ee-4bea-9e76-7d4cc1dcc4f9	4	Sprinkle the mix evenly over the rhubarb and apple mixture.	48cf280e-9329-4c39-a7de-b49350de47b5	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+abf5898f-947f-4527-a9d0-ea3f6d7507d8	5	Bake for 30 mins. Serve warm with ice-cream	48cf280e-9329-4c39-a7de-b49350de47b5	2020-04-21 17:31:16.130169+00	2020-04-21 17:31:16.130169+00
+b0e5c657-06c5-4bcd-80dc-717eb0584901	1	Pre-heat oven to 160°C (static: 180°C)	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+ad89cceb-22c7-4cca-842c-19fb06ab5400	2	Whisk together the egg yolks and 1/2 cup sugar in a medium mixing bowl until smooth and creamy. Add cream and vanilla and gently stir to combine, taking care not to mix quickly so as not to introduce extra bubbles. Place un-filled ramekins in a baking or casserole dish and fill baking dish with hot water until about half-way up sides of ramekins. Pour egg mixture into ramekins.	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+99b7ed41-1598-4847-bdb9-d0b5dd56d0a2	3	Bake for 45 minutes to 1 hour, checking every 10 minutes after 35-40 minutes. When done, a knife inserted into the center of the egg mixture should come out mostly clean.	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+8c38e63f-2d96-4da8-b253-0494be8f67e6	4	Remove from baking dish (I use a spatula) and lay onto clean dish towel to dry, set and cool. Allow to sit for 15 minutes.	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+932ea8d9-9d2d-4e41-8a24-32b109bacb7d	5	Set grill to low. Sprinkle a thin, even layer of granulated sugar over the top of the cooked custard. Completely, but lightly, cover the custard with the sugar. Place the ramekins back into the baking dish and surround by ice and cold water until the water almost reaches halfway up the sides (don't fill too high with water, as the ice will melt and add to the volume of water).	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+a64eac0f-bf96-4f86-93d7-eb766bb9dd34	6	Place baking dish with ramekins under grill (or use crème brûlée torch, if you'd prefer) for 3-5 minutes, or until the sugar has melted and creates a golden brown, caramelized crust.	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+0ccd6b90-2f2b-472d-ab4e-5d1c0e565a35	7	Garnish with berries and/or some fresh mint leaves.	bcaf56d1-8e04-4dc4-984d-e2eb0b823517	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+0ea42ee9-bb9d-41cf-ae47-fe9839736110	1	Pre-heat oven to 170°C (static: 190°C)	b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+2491f035-06ce-43ab-b8cd-7c024d40ed75	2	To make the filling, heat a pan of salted water. When boiling, add potatoes and boil for 15 mins until tender. Melt the butter then fry the onions for a few mins. Add cumin, mustard seeds, ginger and chillies and fry, stirring occasionally, for about 7 mins until soft. Stir in curry paste.	b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+41a3974a-1a0d-46f2-80c1-0a49f17fdcf5	3	Cook the spinach in the microwave on High for 5 mins. Drain and squeeze out as much liquid as you can, then chop it. Drain the potatoes and tip them into the spice mixture. Crush lightly to break them up into chunks rather than mash. Toss in the spice mixture with plenty of salt to coat them, then add the spinach, tomatoes and coriander.	b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+6c4dc9a8-f021-4da3-8478-cba285d7b640	4	Carefully unroll the pastry and brush 2 x 20cm loose-bottomed sandwich tins with some butter. Brush the first sheet of pastry and lay it in and across the tin so that it hangs over the side. Do the same with another sheet of pastry to cover the other side of the tin (so the two form a cross), butter and fold the final sheet in half and lay it in the base of the tin to create a firm base. Do the same with the other tin and remaining pastry.	b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+baa66f1d-9316-417e-ad79-4b714306033c	5	Spoon the filling into the tin and fold up the pastry that is overhanging so that it covers the filling. Brush generously with the remaining butter and sprinkle with seeds. Bake for 35 mins until golden and crisp. Serve with a salad and mango chutney, or a raita made by mixing plain yogurt with mint sauce or jelly, if you like.	b9a8cd91-bbe4-4e8c-ad95-f8cd2251dcc4	2020-04-21 17:34:56.212177+00	2020-04-21 17:34:56.212177+00
+5fa8dc30-087e-4b75-b325-2be84b0af3f0	1	In a large bowl combine the flour and baking powder. Next, add in the yogurt and mix with a spatula until the yogurt has absorbed the flour. You will need to get in there with your hands to really bring the dough together. 	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+dfbc4353-d518-40b8-92f0-22a33817107f	2	Please Note: Depending upon where you live and what flour you use, you may not need all of the yogurt. Start with the initial quantity of flour and add yogurt until you get the same consistency as I did in my video. You may not need all the yogurt so it's best to add it little by little.	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+af17500f-6b1c-4c3c-8c5a-24d2b3241e6b	3	Once the dough is formed into a smooth ball, place it on a floured surface. Using a knife divide the dough into 6 (2oz) balls.	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+3fa08fb0-e2fa-4751-a8ea-7ec8939f460f	4	Working with one ball of dough at a time, roll each one out to an 8 x 8 circle. Try to roll the dough as thin as possible as this will ensure the bread cooks evenly on both sides with a nice air bubbles in between. 	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+880f6b00-9f02-47ba-ac1a-c30b12df25ad	5	Heat a large skillet over medium heat. While the skillet is heating melt together the butter, minced garlic and salt in the microwave for about 30 seconds.	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+afc41501-4c04-4ab2-8716-4a23d92425b9	6	Using a pastry brush, brush one side of the rolled dough with the garlic butter before placing it (garlic side down) into hot skillet. Allow the bread to toast and bubble up cooking for about 2-3 minutes on each side.	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+6e09359e-d1b1-4403-978f-c1f6c999bf3a	7	Once the bread is nice and toasty on each side remove from the heat sprinkle with fresh chopped parsley or herbs of your choice	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+92ca0053-fdae-447f-a3cc-e006e552393c	8	Repeat this process until all 6 flatbreads are cooked. Stack up on a plate or in a covered basket to keep warm. Store at room temperature for 3 days and reheat on the pan before use. 	6b1b89d5-54aa-4e5d-801c-893060d9ca7e	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+3255d4d7-aa1c-4547-8d41-238f11bd17a1	1	To prepare lasagna, cook noodles according to package directions, omitting salt and fat. Drain and rinse under cold water. Drain	3854e245-9420-45bf-8c1b-ae5034132673	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+0e84a445-2c88-4839-b651-ab4c80231a2e	2	Heat oil in a large nonstick skillet over medium-high heat. Add onion, mushrooms, spinach, and 3 garlic cloves; sauté 5 minutes or until onion and mushrooms are tender. Remove from heat, and stir in cheeses, 2 tablespoons basil, 1/2 teaspoon salt, and 1/4 teaspoon crushed red pepper.	3854e245-9420-45bf-8c1b-ae5034132673	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+ea03afd9-8ab9-4e83-b8ec-3205494469c6	3	To prepare sauce, place vinegar and remaining ingredients in a blender; process until smooth.	3854e245-9420-45bf-8c1b-ae5034132673	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+3f006c87-eae6-4c8b-b52e-5f547884c885	4	Place cooked noodles on flat surface; spread 1/4 cup cheese mixture over each noodle. Roll up noodles, jelly-roll fashion, starting with short side. Place the rolls, seam sides down, in a shallow 2-quart microwave-safe dish. Pour 1/4 cup sauce over each roll, and cover with heavy-duty plastic wrap. Microwave at high 5 minutes or until thoroughly heated. Sprinkle with 2 tablespoons basil.	3854e245-9420-45bf-8c1b-ae5034132673	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+4999690d-f0f6-4713-97b4-e4f1d654507f	1	Throw the 1/2 lemon in the juicer, seeds, peel and all. Add the ginger	76fa7744-1fa1-4669-b7d9-c84e4fe270d9	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+e49f1d8e-3ee0-41c4-a504-2df5359350d4	2	Remove stems and cut apples into quarters. Add to juicer.	76fa7744-1fa1-4669-b7d9-c84e4fe270d9	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+9ff37930-6de3-4ce9-8fab-338d6f509a33	3	Serve over ice and drink immediately.	76fa7744-1fa1-4669-b7d9-c84e4fe270d9	2020-04-21 17:39:07.953671+00	2020-04-21 17:39:07.953671+00
+2824c5c0-59bb-47ae-8ec9-21ee161f1b01	1	Start by juicing the cucumber and the kale together.	f3b719ea-3ab6-4b95-8305-7c3e39d84227	2020-04-21 17:40:17.556888+00	2020-04-21 17:40:17.556888+00
+a679b65f-4029-42b7-9119-125fe2777b9d	2	Remove stems and cut apples into quarters. Add to juicer.	f3b719ea-3ab6-4b95-8305-7c3e39d84227	2020-04-21 17:40:17.556888+00	2020-04-21 17:40:17.556888+00
+31275171-7e35-454f-8847-3073ad11d0f8	3	Add mint and lemon to juicer.	f3b719ea-3ab6-4b95-8305-7c3e39d84227	2020-04-21 17:40:17.556888+00	2020-04-21 17:40:17.556888+00
+b67e07ae-94f7-487d-af0c-7008d69d8fde	4	Serve over ice and drink immediately.	f3b719ea-3ab6-4b95-8305-7c3e39d84227	2020-04-21 17:40:17.556888+00	2020-04-21 17:40:17.556888+00
+0f2f1d40-1d2d-44a4-9112-6bce246b9dce	1	Wash all ingredients. Slice apple into quarters, slice 1 thumb of ginger and half a lemon	f8212ef2-8166-44fe-bde9-d18ffc0c65d9	2020-04-22 11:03:00.917866+00	2020-04-22 11:03:00.917866+00
+12801e79-ab92-4245-acc5-f68053567091	2	Add all ingredients to a juicer.	f8212ef2-8166-44fe-bde9-d18ffc0c65d9	2020-04-22 11:03:00.917866+00	2020-04-22 11:03:00.917866+00
+414349e2-6b11-42ad-b86b-1d6aa8106233	3	Stir and pour into a glass filled with ice.	f8212ef2-8166-44fe-bde9-d18ffc0c65d9	2020-04-22 11:03:00.917866+00	2020-04-22 11:03:00.917866+00
+048efcff-f1c1-4baf-8bd3-618f71331a7a	1	Cut the carrots and apples into medium sized pieces. Cut off a thumb of ginger	b42b5a5e-b65f-41ab-82fa-437fa661153e	2020-04-22 11:04:35.104114+00	2020-04-22 11:04:35.104114+00
+f75cd99e-3918-433e-8b5f-67d196cba167	2	Add all ingredients to a juicer.	b42b5a5e-b65f-41ab-82fa-437fa661153e	2020-04-22 11:04:35.104114+00	2020-04-22 11:04:35.104114+00
+965917ad-3c32-4813-9754-3f3242589502	3	Stir and pour into a glass filled with ice.	b42b5a5e-b65f-41ab-82fa-437fa661153e	2020-04-22 11:04:35.104114+00	2020-04-22 11:04:35.104114+00
+e0df365d-3a51-40fc-8f1d-42d722e34789	1	Quarter the apple. Core the tomato, roughly chop 5cm of cucumber. Roughly chop the carrots.	86b73a62-4d28-4362-bdef-90d6576f438b	2020-04-22 11:18:27.15748+00	2020-04-22 11:18:27.15748+00
+988449f0-2f5b-4732-a9eb-2c581b3302b9	2	Add all ingredients to a juicer.	86b73a62-4d28-4362-bdef-90d6576f438b	2020-04-22 11:18:27.15748+00	2020-04-22 11:18:27.15748+00
+3dda8750-611a-40c7-9d6c-0eb36d3c810b	3	Stir and pour into a glass filled with ice.	86b73a62-4d28-4362-bdef-90d6576f438b	2020-04-22 11:18:27.15748+00	2020-04-22 11:18:27.15748+00
+d74c35de-3919-45e8-a0fd-a7a1af7b85e9	1	Quarter the apple. Slice a lime in half.	532f2790-9c84-42ac-abc0-3a6ca6b0497e	2020-04-22 11:18:27.15748+00	2020-04-22 11:18:27.15748+00
+c78c9e60-7f24-442c-97e7-e9c639410ca9	2	Add all ingredients to a juicer.	532f2790-9c84-42ac-abc0-3a6ca6b0497e	2020-04-22 11:18:27.15748+00	2020-04-22 11:18:27.15748+00
+07f25bb5-0ea6-424e-b3f7-90bf8772c1e3	3	Stir and pour into a glass filled with ice.	532f2790-9c84-42ac-abc0-3a6ca6b0497e	2020-04-22 11:18:27.15748+00	2020-04-22 11:18:27.15748+00
+ee85e1fc-08c7-4b30-ac71-520782720aac	1	Quarter the apple and courgette. Slice the limes in half.	05f05ddf-d67d-47b0-8365-4a84f4fe1e17	2020-04-22 11:23:34.873836+00	2020-04-22 11:23:34.873836+00
+481e7cf7-f256-49d3-b39d-a2d10052f716	2	Add all ingredients to a juicer.	05f05ddf-d67d-47b0-8365-4a84f4fe1e17	2020-04-22 11:23:34.873836+00	2020-04-22 11:23:34.873836+00
+425246cc-0a36-426b-a201-6457d7642200	3	Stir and pour into a glass filled with ice.	05f05ddf-d67d-47b0-8365-4a84f4fe1e17	2020-04-22 11:23:34.873836+00	2020-04-22 11:23:34.873836+00
+e463b3c1-159c-425b-95c5-047be86e7d8b	1	Roughly chop the lemon and weigh out the sugar.	40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	2020-04-22 11:26:22.359737+00	2020-04-22 11:26:22.359737+00
+50f3b2d8-3e5d-457f-a3e3-08652c5ef5bc	2	Tip the lemons, sugar and half the water into a food processor and blend until the lemon is finely chopped.	40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	2020-04-22 11:26:22.359737+00	2020-04-22 11:26:22.359737+00
+a5170d08-2be0-4d5f-92dd-76dc8f566ea7	3	Pour the mixture into a sieve over a bowl, then press through as much juice as you can.	40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	2020-04-22 11:26:22.359737+00	2020-04-22 11:26:22.359737+00
+608ef52c-b31f-47ca-b5c3-907f9d73daf1	4	Top up with the remaining water and serve with plain ice or frozen with slices of lemon and lime.	40c3642e-c678-4a8f-8a60-a4d3b6ed0fb3	2020-04-22 11:26:22.359737+00	2020-04-22 11:26:22.359737+00
+d02cd354-2430-4fba-bd4a-717d90f4d943	1	Quarter the apple. Peel the oranges and lemon. Chop off a thumb of fresh ginger and turmeric (or use 1 tbsp of dried turmeric).	b9cedac1-5bb6-4c3d-88a5-947e7184051e	2020-04-22 11:32:55.13958+00	2020-04-22 11:32:55.13958+00
+f2104f07-a60f-4890-83b8-dc70e41591a6	2	Add all ingredients to a juicer.	b9cedac1-5bb6-4c3d-88a5-947e7184051e	2020-04-22 11:32:55.13958+00	2020-04-22 11:32:55.13958+00
+c71a96c2-8229-48be-a9e8-441d0beb1457	3	Stir and pour into a glass filled with ice. Top up with water.	b9cedac1-5bb6-4c3d-88a5-947e7184051e	2020-04-22 11:32:55.13958+00	2020-04-22 11:32:55.13958+00
+3fbb4170-3aa8-4972-a359-5c0aa1469d3f	1	Heat the part-baked ciabatta according to instructions.	335f40ed-072f-49f5-9c8c-d4a73258eb41	2020-04-22 11:39:14.138694+00	2020-04-22 11:39:14.138694+00
+54c0e192-037d-40f6-99a7-8cf48d15f6ce	2	Slice the mozzarella and tomato. Slice the ciabatta in half.	335f40ed-072f-49f5-9c8c-d4a73258eb41	2020-04-22 11:39:14.138694+00	2020-04-22 11:39:14.138694+00
+877976de-476c-4a85-ab7b-8189db5880ce	3	Spread pesto along sandwich. Add mozzarella cheese slices and tomato slices on top.	335f40ed-072f-49f5-9c8c-d4a73258eb41	2020-04-22 11:39:14.138694+00	2020-04-22 11:39:14.138694+00
+75012d05-a311-4f98-a300-97aa00a613ce	4	Toast under the grill until the cheese has melted	335f40ed-072f-49f5-9c8c-d4a73258eb41	2020-04-22 11:39:14.138694+00	2020-04-22 11:39:14.138694+00
+31cd4df9-5d2c-4988-afe3-dde728325d6f	5	Remove. Season with herbs, salt and pepper and enjoy.	335f40ed-072f-49f5-9c8c-d4a73258eb41	2020-04-22 11:39:14.138694+00	2020-04-22 11:39:14.138694+00
+ee0ad8de-c74d-4172-a3e8-207f0b4d282a	1	Chop broccoli into florets. Grate the cheddar. Chop the chives. Preheat the oven to 200°C (static: 220°C)	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-22 11:50:12.236871+00	2020-04-22 11:50:12.236871+00
+c7ae2a7f-c55a-4b93-a483-59a7f3049f45	2	Bring a saucepan of lightly salted water to a boil. Add the broccoli and cook 1 minute.	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-22 11:50:12.236871+00	2020-04-22 11:50:12.236871+00
+50c4d9ff-c902-4b31-b243-378c2f4d9d19	3	Drain and rinse under cold water until cool; pat dry. Mix the broccoli, cheddar, sour cream and chives in a bowl until combined, then squeeze the mixture together with your hands to make it compact.	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-22 11:50:12.236871+00	2020-04-22 11:50:12.236871+00
+c7e1e8a4-c4b2-4385-979d-b0d36bb1539e	4	Brush a baking sheet lightly with vegetable oil. On a floured surface, roll out the dough and fill the dinner pockets. 	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-22 11:50:12.236871+00	2020-04-22 11:50:12.236871+00
+a14e6663-c4e9-4485-9a91-664919306e65	5	Place the pockets seam-side down on the prepared baking sheet. Beat the egg and 1 tablespoon water in a small bowl. Brush the pockets with the egg wash.	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-22 11:50:12.236871+00	2020-04-22 11:50:12.236871+00
+5d4544f3-95e4-4303-8a42-da0c19e4d1be	6	Bake until golden brown, about 15 minutes.	ee905478-bfb1-4e4c-9349-5a34d2234f4d	2020-04-22 11:50:12.236871+00	2020-04-22 11:50:12.236871+00
+7d6c844e-ece8-4e40-a932-ec97b6e5c2c2	2	Place chickpeas, couscous, vegetable stock powder, coriander and garlic in a large bowl. Pour over hot water, shake to level out couscous (chickpeas should mostly settle on top). Cover with plate or cling wrap, set aside for 5 minutes.	ea7c374c-310e-4b83-ab94-06170b271168	2020-04-22 12:09:41.620775+00	2020-04-22 12:09:41.620775+00
+213a1cd0-2fd1-46d4-8bbc-3d191b90c695	3	Fluff couscous with fork. Cool a bit.	ea7c374c-310e-4b83-ab94-06170b271168	2020-04-22 12:09:41.620775+00	2020-04-22 12:09:41.620775+00
+2ca97567-5979-47dd-842e-d89675d227af	4	Add coriander, onion, sun dried tomatoes (including all oil), rocket, lemon juice and black pepper. Sprinkle zest across surface. Toss well to combine.	ea7c374c-310e-4b83-ab94-06170b271168	2020-04-22 12:09:41.620775+00	2020-04-22 12:09:41.620775+00
+fbd07538-89c0-482c-927f-8cbdd02c4411	1	Boil 315ml water in a kettle. Finely chop the fresh coriander. Chop the onion. Chop the rocket into 5cm pieces. Zest a lemon. Slice both lemons in half and juice them.	ea7c374c-310e-4b83-ab94-06170b271168	2020-04-22 12:09:41.620775+00	2020-04-22 12:09:41.620775+00
+824ecf2a-1af0-45ab-b3fb-417f8a057f58	5	Adjust salt and pepper to taste. Transfer to serving bowl, crumble over the feta. . Serve.	ea7c374c-310e-4b83-ab94-06170b271168	2020-04-22 12:09:41.620775+00	2020-04-22 12:09:41.620775+00
+74f52f00-b8ed-45eb-9bd1-08a63fb76371	1	Pre-heat the oven to 200°C (static: 220°C) and line 2 baking trays with baking paper.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+a3b157ca-8d7d-4725-8584-1d0cd7c8783b	2	Press 1 clove of garlic and add to a mixing bowl with flour and 1/4 tsp salt. Add 236ml cold water and stir.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+05366a52-c335-4dc9-a1d6-896e6dafcb74	3	Continue adding water 1 tablespoon at a time until a pancake batter-esque consistency is reached. You want batter that is thick enough to stay on a cauliflower floret but thin enough that you can easily shake off the excess. 	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+8c9c7415-892f-4d19-a2ea-9a8851f29ef0	4	One by one, dip the cauliflower florets into the batter, gently shake off extra batter, and place them onto the baking sheet. Leave plenty of space between florets on the baking sheet so that they can get crispy. You may not be able to quite fit a whole head of cauliflower on two baking sheets.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+0d5e042a-5a1a-41c6-8894-28fead7658a6	5	Bake the battered cauliflower for 20 minutes, rotate the position of the trays, and then bake for another 5-10 more minutes or until crispy and browned.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+3e36145d-7093-44de-a6c8-5a4ae6419d8d	6	Meanwhile, heat two teaspoons of the sesame oil in a small saucepan. Add the garlic and ginger and saute over medium-low heat, stirring frequently, for about 60-90 seconds, or until the garlic and ginger are softened and fragrant.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+6814f7f0-2923-49f6-9d6b-15a253b2d8d6	7	Add the agave nectar (or honey), soy sauce, rice vinegar, tomato paste and sriracha and stir well.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+abfd3902-b199-4857-9fb3-97686752cf23	8	Continue cooking on medium-low heat, stirring frequently, for about 5 minutes, or until the sauce is bubbling and thickened slightly. Turn the heat to low and leave on the burner, stirring occasionally to keep from sticking. Stir in the remaining sesame oil just before mixing with the cauliflower. (I do this to make sure there's a nice noticeable sesame flavor).	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+707a5596-b5df-49f9-b308-cd12c788a398	9	Once the cauliflower is done baking, use a spatula to gently mix it together with the sauce in a bowl or the saucepan if large enough. Spread it back out on the baking sheets, and return it to the oven for just 2-4 minutes, to thicken the sauce onto the cauliflower. Watch it carefully, as the sticky sesame sauce can burn quickly.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+8a8cf657-c2f5-465f-aebd-9c34f540bb27	10	Remove from the oven and serve immediately, sprinkled with sesame seeds and chopped green onions if desired.	190433f1-f3c5-4bee-b054-915d3d94df0c	2020-04-22 12:35:59.741998+00	2020-04-22 12:35:59.741998+00
+ea735843-a10c-4e76-a6f8-017b3dd71a7c	2	Chop the cauliflower into florets. Core and shred the red cabbage. Halve and remove stone of the avocados, scoop out the flesh. Chop some fresh coriander. Zest and juice half a lime.	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:51:48.658978+00	2020-04-22 12:51:48.658978+00
+4fe624de-d955-4099-a1f8-deec1f025dd6	3	Place the vinegar, water, sugar, and salt in a medium saucepan. Bring to a boil over medium-high heat, stirring occasionally to dissolve the sugar. Place the cabbage in a medium, heatproof bowl and pour the vinegar mixture over the top. Stir to submerge the cabbage as much as possible. Let it sit while you prepare the cauliflower, then drain and discard the liquid.	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:51:48.658978+00	2020-04-22 12:51:48.658978+00
+46f1f13f-15c0-47c1-b8ad-71d29d371758	1	Pre-heat the oven to 200°C (static: 220°C). Line a baking tray with baking paper.	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:51:48.658978+00	2020-04-22 12:51:48.658978+00
+fca8ed0e-9c1a-4fa4-aeb7-a4c6ddaca758	4	Place the cauliflower in a medium bowl, add the olive oil, chili powder, cumin, mince 1 clove of garlic and season with salt and pepper. Toss to combine.	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:51:48.658978+00	2020-04-22 12:51:48.658978+00
+ded32fe5-f3ff-4370-a754-d1deacabbc62	5	Transfer the cauliflower onto the baking tray, and spread into an even layer. Roast until browned in spots but still crisp-tender, stirring halfway through, about 20 minutes total.	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:51:48.658978+00	2020-04-22 12:51:48.658978+00
+73436ccd-415f-4492-9c52-4f3b7aeda84f	6	While the cauliflower is cooking, scoop the avocado in a medium bowl and mash. Stir in the yogurt, half of the coriander, lime zest, and juice; set aside.	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:51:48.658978+00	2020-04-22 12:51:48.658978+00
+dac000cc-12b0-49c7-9d16-e96160504066	7	When the cauliflower is ready, drain off the liquid from the pickled cabbage. To assemble, fill the tortillas with the pickled cabbage and cauliflower, then top with the avocado mixture and remaining coriander.	7ce3aa95-6cb4-43be-859d-858eaf915886	2020-04-22 12:51:48.658978+00	2020-04-22 12:51:48.658978+00
+331b5e10-e3db-4ccf-8e48-6e62eccb971e	1	Add 500g flour and 1 tsp salt to a large bowl. Mix together	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+5bd65f3b-d917-40d6-8ec8-bce08e6e7355	2	In a small saucepan, warm 280ml water with 40g butter until they are very hot, but not boiling (temperature should be around 80-90 °C, that is when the water starts to move and steam).	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+f7e03937-4478-41cb-88fa-1792b50a606c	3	Pour hot water with butter into the bowl with flour, mix with a wooden spoon until roughly combined.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+a670cba4-bf7c-4b00-aa11-51eaf4367abe	4	Knead the dough for about 5 minutes until it is smooth, soft and elastic and doesn't stick to your hands. If the dough is too wet, add some more flour, and if it's too dry add some water.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+5524ee84-6a6e-495a-a545-b86d47dd7a4e	5	Wrap the kneaded dough in cling film, leave to rest for about 30 minutes (it will be easy to roll out).	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+65d73aab-8866-4a61-b17d-91b2fa3b36a2	6	While the dough is resting, prepare the filling. Peel and chop the potatoes, then boil in a pan of salted water until soft enough to mash (about 20 minutes). Drain well and set aside to cool.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+cb9b722f-febf-483e-80e5-5cb894024654	7	Peel and finely dice an onion. Heat 1 tbsp vegetable oil in a frying pan over a medium heat and fry the onions for 4-5 minutes, or until crisp and browned. Reserve a tablespoonful of the onions for the garnish.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+7ff41a18-53b6-43ee-90ec-d6e7a6002570	8	When the potatoes have cooled, transfer them to a large bowl and crumble over the cottage cheese. Mash until smooth, then stir in the fried onions until well combined. Set aside.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+35f5c6b0-ae1d-429c-a89a-acd3e54015be	9	After the dough has rested, divide it into 4 parts. 	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+5db0bfcd-7f51-4bc1-9453-5715167aa3da	10	Onto a lightly floured surface, roll out thinly the first piece of the dough, to a thickness of approx. 2 mm. If the dough is hard to roll out, set it aside for about 5-10 minutes to rest.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+6e5883ce-114e-49ba-92bf-039fcd536ea2	11	Cut the dough into 10cm/4in rounds using a pastry cutter. Place one ball of filling / 1 teaspoon of filling on each round.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+a32d86ce-bf34-4377-8daa-09b79f922b9c	12	Gather scraps, cover with plastic wrap and set aside. Fold the dough over the filling to create a half-moon shape. Press edges together, sealing and crimping with your fingers. Do not leave any gaps or pierogi may open during cooking.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+d2ad150f-a9ad-4576-9a5e-539693669c0f	13	Place the pierogi apart on a towel lightly sprinkled with flour (this is important, they can stick to the board), cover loosely with a kitchen cloth so that they don‘t dry out.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+41756c6b-3a6d-4a07-8cee-adee79cdf14d	14	Repeat steps 9-13 with the remaining dough.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:48:23.819648+00	2020-04-22 13:48:23.819648+00
+67e9a0e9-8772-4e02-a757-22761324f182	15	To cook the pierogi, bring a large pot of salted water to a boil. Cook the pierogi in batches (around 10-12 dumplings at a time). When they float to the water surface cook them for 1-2 minutes, then remove from the water with a slotted spoon. The cooking time will depend on the thickness of the dough.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:51:24.344432+00	2020-04-22 13:51:24.344432+00
+9b661c04-138d-4ad6-9306-61d73781d2e4	16	To serve, pile the pierogi onto serving plates and serve the soured cream in small bowls alongside. Sprinkle with the reserved fried onions and the dill.	045e6509-2b94-4d0a-aefd-9a320fc8a790	2020-04-22 13:51:24.344432+00	2020-04-22 13:51:24.344432+00
+1033a4d9-506f-4199-897d-4f1f20a6db07	1	Finely chop the onion. Peel and chop the potatoes. Heat 1 tbsp vegetable oil in a large saucepan over medium heat. Cook the onion for 8-10 mins or until golden and lightly caramelised. Add minced garlic and ginger. Fry for a couple of minutes until fragrant.	82595eba-6f0a-4d50-99fd-f5a346ca5783	2020-04-22 14:11:05.791886+00	2020-04-22 14:11:05.791886+00
+6172c870-faa2-4506-89e8-cb2a9c5ee217	2	Add in coriander, cumin, turmeric, chili and curry powder and some salt. Fry whilst stirring for 2 mins or until fragrant.	82595eba-6f0a-4d50-99fd-f5a346ca5783	2020-04-22 14:11:05.791886+00	2020-04-22 14:11:05.791886+00
+1a2bacc1-4bac-4fd9-9dd2-422d7f668d8c	3	Add the chopped tomatoes, tomato purée, vegetable stock, potato and cauliflower. Bring to the boil. Reduce heat to low and cook for 15-20 mins or until vegetables are tender. 	82595eba-6f0a-4d50-99fd-f5a346ca5783	2020-04-22 14:11:05.791886+00	2020-04-22 14:11:05.791886+00
+f6364166-0f86-4d5d-9435-5ff6a2d0b4c8	4	Prepare the rice according to packet instructions. Add in any other vegetables to the curry you would like and cook until tender. If needed, add more water to the sauce.	82595eba-6f0a-4d50-99fd-f5a346ca5783	2020-04-22 14:11:05.791886+00	2020-04-22 14:11:05.791886+00
+9ca05a66-619d-4690-b6b8-c882653b6649	5	Cook until all vegetables are tender but before potatoes start falling apart. Serve the vegetable curry with steamed basmati rice. Garnish with fresh coriander.	82595eba-6f0a-4d50-99fd-f5a346ca5783	2020-04-22 14:11:05.791886+00	2020-04-22 14:11:05.791886+00
+\.
+
+
+--
+-- Data for Name: units; Type: TABLE DATA; Schema: public; Owner: recipes
+--
+
+COPY public.units (uuid, name, abbreviation, created_at, updated_at) FROM stdin;
+537c63ca-883d-4f2f-a12a-9bc033d79675	centimetre	cm	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+48d47d65-aa8f-4fe9-b7ba-7ec7ee7cb348	cup	c	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+7bc3fe10-aa10-4331-979f-38945ad9b977	grams	g	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+f28e1610-a0a7-4f8a-b476-3ecd2b5a7c20	fluid ounce	fl oz	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+945bd65a-7027-48fa-831c-cc49df531b07	inch	in	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+52054e84-ab65-42e9-8024-c36d5c53a1e8	kilogram	kg	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+3857b26a-febf-4533-8b59-95bc087783dc	litres	l	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+ab843184-f696-42b6-86cf-82ab6f6588cb	milliliter	ml	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+5fe1ae4f-0e14-401c-92ea-c06376f21c27	millimetre	mm	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+fb195ee0-16e1-42ce-af6f-f33a15505d63	ounce	oz	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+ef16ed1e-aa0d-4bee-97cc-1da2a104644e	pint	pt	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+953bd085-c037-4544-b504-0b8e57e4a0ff	pound	lb	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+2fd8d7ba-6233-4086-b96c-1eb889d39120	teaspoon	tsp	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+c0799d48-e1d6-43b2-b73d-2e259c8d1662	tablespoon	tbsp	2020-04-06 11:13:53.49531+00	2020-04-06 11:13:53.49531+00
+5b016058-842f-445f-839d-0605af883b49	unit	unit	2020-04-06 11:41:39.323446+00	2020-04-06 11:41:39.323446+00
+b26964ae-a356-401d-9eca-7d4daa13a83e	handful	handful	2020-04-22 11:11:00.989876+00	2020-04-22 11:11:00.989876+00
+8f5143c5-93bb-40c5-a5a7-c2c200dac5e3	head	head	2020-04-22 11:21:52.48045+00	2020-04-22 11:21:52.48045+00
+341f67f3-1eb9-42ff-b086-ae9ee549b15e	pinch	pinch	2020-04-22 11:33:52.353674+00	2020-04-22 11:33:52.353674+00
+b9dc84f1-d768-48e5-b61d-c387ea43d1e5	cube	cube	2020-04-22 12:02:38.766122+00	2020-04-22 12:02:38.766122+00
+691f3763-8262-45a6-8188-f9c2d6a32d34	leaves	leaves	2020-04-22 16:15:11.072789+00	2020-04-22 16:15:11.072789+00
+\.
+
+
+--
+-- Name: equipment equipment_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.equipment
+    ADD CONSTRAINT equipment_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: ingredients ingredients_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.ingredients
+    ADD CONSTRAINT ingredients_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: labels labels_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.labels
+    ADD CONSTRAINT labels_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: photos photos_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.photos
+    ADD CONSTRAINT photos_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: recipe_ingredient recipe_ingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipe_ingredient
+    ADD CONSTRAINT recipe_ingredient_pkey PRIMARY KEY (recipe_id, ingredient_id);
+
+
+--
+-- Name: recipe_label recipe_label_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipe_label
+    ADD CONSTRAINT recipe_label_pkey PRIMARY KEY (recipe_id, label_id);
+
+
+--
+-- Name: recipes recipes_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipes
+    ADD CONSTRAINT recipes_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: steps steps_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.steps
+    ADD CONSTRAINT steps_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: units units_pkey; Type: CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.units
+    ADD CONSTRAINT units_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: photos photos_recipe_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.photos
+    ADD CONSTRAINT photos_recipe_id_fkey FOREIGN KEY (recipe_id) REFERENCES public.recipes(uuid);
+
+
+--
+-- Name: recipe_ingredient recipe_ingredient_ingredient_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipe_ingredient
+    ADD CONSTRAINT recipe_ingredient_ingredient_id_fkey FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(uuid);
+
+
+--
+-- Name: recipe_ingredient recipe_ingredient_recipe_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipe_ingredient
+    ADD CONSTRAINT recipe_ingredient_recipe_id_fkey FOREIGN KEY (recipe_id) REFERENCES public.recipes(uuid);
+
+
+--
+-- Name: recipe_ingredient recipe_ingredient_unit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipe_ingredient
+    ADD CONSTRAINT recipe_ingredient_unit_id_fkey FOREIGN KEY (unit_id) REFERENCES public.units(uuid);
+
+
+--
+-- Name: recipe_label recipe_label_label_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipe_label
+    ADD CONSTRAINT recipe_label_label_id_fkey FOREIGN KEY (label_id) REFERENCES public.labels(uuid);
+
+
+--
+-- Name: recipe_label recipe_label_recipe_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.recipe_label
+    ADD CONSTRAINT recipe_label_recipe_id_fkey FOREIGN KEY (recipe_id) REFERENCES public.recipes(uuid);
+
+
+--
+-- Name: steps steps_recipe_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: recipes
+--
+
+ALTER TABLE ONLY public.steps
+    ADD CONSTRAINT steps_recipe_id_fkey FOREIGN KEY (recipe_id) REFERENCES public.recipes(uuid);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

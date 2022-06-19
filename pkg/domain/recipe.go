@@ -10,7 +10,7 @@ import (
 type Recipe struct {
 	ID          string        `json:"id" db:"uuid"`
 	Name        string        `json:"name"`
-	PhotoURL    string        `json:"photo_url" db:"photo_url"`
+	PhotoURL    *string       `json:"photo_url" db:"photo_url"`
 	Description string        `json:"description"`
 	Servings    int           `json:"servings" db:"serving_size"`
 	Timing      string        `json:"timing"`
@@ -19,10 +19,10 @@ type Recipe struct {
 }
 
 func (r *Recipe) LoadImage() (image.Image, error) {
-	if len(r.PhotoURL) == 0 {
+	if len(*r.PhotoURL) == 0 {
 		return nil, errors.New("this recipe has no image")
 	}
-	resp, err := http.Get(r.PhotoURL)
+	resp, err := http.Get(*r.PhotoURL)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+
+  postgres:
+    build:
+      dockerfile: ./docker/postgres/Dockerfile
+      context: .
+    ports:
+    - "5489:5432"
+    volumes:
+    - ./docker/postgres/volume:/tmp
+    environment:
+      LC_ALL: C.UTF-8
+      POSTGRES_USER: recipes
+      POSTGRES_PASSWORD: sepicer
+      POSTGRES_DB: recipes

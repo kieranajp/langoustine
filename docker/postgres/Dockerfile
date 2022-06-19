@@ -1,3 +1,3 @@
-FROM postgres:14-alpine
+FROM postgres:10-alpine
 
-COPY ./docker/postgres/volume/seed.sql /docker-entrypoint-initdb.d/seed.sql
+COPY ./docker/postgres/volume/the_blue_book.sql /docker-entrypoint-initdb.d/the_blue_book.sql

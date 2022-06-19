@@ -1,3 +1,6 @@
 *.epub
 *.mobi
 *.azw3
+
+.vscode/
+__debug_bin
